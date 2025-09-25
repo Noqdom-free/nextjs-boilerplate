@@ -23,6 +23,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { ItemManager } from "./ItemManager";
 
 import { invoiceFormSchema, type InvoiceFormData } from "@/lib/validation";
 import { PAYMENT_TERMS_OPTIONS, DEFAULT_PAYMENT_TERMS, type PaymentTermsOption, type InvoiceData } from "@/types/invoice";
@@ -41,6 +42,8 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
 
   const form = useForm<InvoiceFormData>({
     resolver: zodResolver(invoiceFormSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
     defaultValues: {
       business: {
         name: "",
@@ -80,8 +83,17 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
   const items = formData.items || [];
   const taxRate = formData.tax?.rate || 0;
 
-  // Simple direct calculations
+  // Dynamic calculations for multiple items
   const calculations = useMemo(() => {
+    if (!items || items.length === 0) {
+      return {
+        subtotal: 0,
+        taxAmount: 0,
+        total: 0,
+        items: []
+      };
+    }
+
     const validItems = items.map(item => {
       const qty = Number(item.quantity) || 0;
       const price = Number(item.unitPrice) || 0;
@@ -103,9 +115,9 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
       total,
       items: validItems
     };
-  }, [items?.[0]?.description, items?.[0]?.quantity, items?.[0]?.unitPrice, taxRate]);
+  }, [items, taxRate]);
 
-  // Simple invoice data - no complex memoization
+  // Invoice data with multiple items support
   const invoiceData = useMemo(() => ({
     business: formData.business,
     customer: formData.customer,
@@ -121,10 +133,10 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
       total: calculations.total
     }
   }), [
+    // Individual primitive values instead of object references
     formData.business?.name, formData.business?.email, formData.business?.address, formData.business?.phone,
     formData.customer?.name, formData.customer?.email, formData.customer?.address, formData.customer?.phone,
     formData.details?.invoiceNumber, formData.details?.issueDate, formData.details?.dueDate, formData.details?.paymentTerms, formData.details?.notes,
-    formData.items?.[0]?.description, formData.items?.[0]?.quantity, formData.items?.[0]?.unitPrice,
     calculations.items, calculations.subtotal, calculations.taxAmount, calculations.total, taxRate
   ]);
 
@@ -147,8 +159,8 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
       if (!data.customer.name) {
         throw new Error("Customer name is required");
       }
-      if (!data.items[0]?.description) {
-        throw new Error("Item description is required");
+      if (!data.items.length || !data.items.some(item => item.description)) {
+        throw new Error("At least one item with description is required");
       }
 
       // Generate PDF using the invoice data
@@ -412,82 +424,13 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
           </CardContent>
         </Card>
 
-        {/* Line Item */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CurrencyDollar className="w-5 h-5" />
-              Item Details
-            </CardTitle>
-            <CardDescription>
-              Enter the item or service being invoiced
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
-            <div className="space-y-2">
-              <Label htmlFor="items.0.description" className="text-sm sm:text-base">Description *</Label>
-              <Input
-                id="items.0.description"
-                {...form.register("items.0.description")}
-                placeholder="Description of item or service"
-                className="text-sm sm:text-base"
-              />
-              {form.formState.errors.items?.[0]?.description && (
-                <p className="text-sm text-destructive">
-                  {form.formState.errors.items[0].description.message}
-                </p>
-              )}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="items.0.quantity" className="text-sm sm:text-base">Quantity *</Label>
-                <Input
-                  id="items.0.quantity"
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  value={items[0]?.quantity ?? 1}
-                  onChange={(e) => {
-                    const value = e.target.value === '' ? 1 : parseFloat(e.target.value) || 1;
-                    form.setValue("items.0.quantity", value);
-                  }}
-                  className="text-sm sm:text-base"
-                />
-                {form.formState.errors.items?.[0]?.quantity && (
-                  <p className="text-sm text-destructive">
-                    {form.formState.errors.items[0].quantity.message}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="items.0.unitPrice" className="text-sm sm:text-base">Price *</Label>
-                <Input
-                  id="items.0.unitPrice"
-                  type="number"
-                  step="0.01"
-                  min="0"
-                  value={items[0]?.unitPrice ?? 0}
-                  onChange={(e) => {
-                    const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
-                    form.setValue("items.0.unitPrice", value);
-                  }}
-                  className="text-sm sm:text-base"
-                />
-                {form.formState.errors.items?.[0]?.unitPrice && (
-                  <p className="text-sm text-destructive">
-                    {form.formState.errors.items[0].unitPrice.message}
-                  </p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm sm:text-base">Line Total</Label>
-                <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm sm:text-base items-center">
-                  {formatCurrency(calculations.items[0]?.total || 0)}
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Line Items */}
+        <ItemManager
+          control={form.control}
+          errors={form.formState.errors}
+          items={items}
+          setValue={form.setValue}
+        />
 
         {/* Tax and Totals */}
         <Card>
