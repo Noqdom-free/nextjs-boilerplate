@@ -71,7 +71,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
     }
   });
 
-  // Watch form data directly
+  // Watch form data directly - this triggers on ANY field change
   const formData = form.watch();
   const items = formData.items || [];
   const taxRate = formData.tax?.rate || 0;
@@ -99,10 +99,10 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
       total,
       items: validItems
     };
-  }, [items, taxRate]);
+  }, [items?.[0]?.description, items?.[0]?.quantity, items?.[0]?.unitPrice, taxRate]);
 
   // Simple invoice data - no complex memoization
-  const invoiceData = {
+  const invoiceData = useMemo(() => ({
     business: formData.business,
     customer: formData.customer,
     details: formData.details,
@@ -116,12 +116,18 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
       taxAmount: calculations.taxAmount,
       total: calculations.total
     }
-  };
+  }), [
+    formData.business?.name, formData.business?.email, formData.business?.address, formData.business?.phone,
+    formData.customer?.name, formData.customer?.email, formData.customer?.address, formData.customer?.phone,
+    formData.details?.invoiceNumber, formData.details?.issueDate, formData.details?.dueDate, formData.details?.paymentTerms, formData.details?.notes,
+    formData.items?.[0]?.description, formData.items?.[0]?.quantity, formData.items?.[0]?.unitPrice,
+    calculations.items, calculations.subtotal, calculations.taxAmount, calculations.total, taxRate
+  ]);
 
-  // Send data to preview immediately
+  // Send data to preview immediately on any form data change
   useEffect(() => {
     onDataChange(invoiceData);
-  }, [onDataChange, invoiceData.business, invoiceData.customer, invoiceData.details, calculations.subtotal, calculations.taxAmount, calculations.total, taxRate]);
+  }, [onDataChange, invoiceData]);
 
 
   const onSubmit = (data: InvoiceFormData) => {
