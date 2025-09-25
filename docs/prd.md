@@ -33,7 +33,7 @@ nextjs-boilerplate/
 │   │   ├── InvoiceForm.tsx            # Form for invoice input
 │   │   ├── InvoicePreview.tsx         # Invoice preview component
 │   │   ├── ItemManager.tsx            # Add/remove items component
-│   │   └── ExportButtons.tsx          # Print/PDF export buttons
+│   │   └── ExportButtons.tsx          # PDF export buttons
 │   └── layout/
 │       └── Header.tsx                  # App header (optional)
 ├── lib/

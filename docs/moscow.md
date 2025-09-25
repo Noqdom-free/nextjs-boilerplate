@@ -15,7 +15,7 @@
 | SHOULD HAVE | Terms & Conditions             | Legal terms section                                   |
 | SHOULD HAVE | Billing Addresses              | Bill to / Ship to addresses                           |
 | SHOULD HAVE | Mobile Responsiveness          | Responsive design, mobile optimization                |
-| COULD HAVE  | Multiple Currency Support      | Support for different currencies                      |
+| SHOULD HAVE | Multiple Currency Support      | Support for different currencies                      |
 | WON'T HAVE  | Invoice Status Tracking        | Draft, Sent, Paid, Overdue - requires data persistence |
 | WON'T HAVE  | Invoice Templates              | Different styling options - violates simplicity      |
 | WON'T HAVE  | Business Logo Upload           | Logo integration - requires file storage             |
