@@ -15,7 +15,7 @@ import {
   Calculator,
   Percent,
   Trash,
-  FloppyDisk
+  DownloadSimple
 } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
@@ -27,12 +27,16 @@ import { Separator } from "@/components/ui/separator";
 import { invoiceFormSchema, type InvoiceFormData } from "@/lib/validation";
 import { PAYMENT_TERMS_OPTIONS, DEFAULT_PAYMENT_TERMS, type PaymentTermsOption, type InvoiceData } from "@/types/invoice";
 import { generateInvoiceNumber, formatCurrency } from "@/lib/utils";
+import { generateInvoicePDF } from "@/lib/pdf-generator";
 
 interface InvoiceFormProps {
   onDataChange: (data: Partial<InvoiceData>) => void;
 }
 
 export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generateError, setGenerateError] = useState<string | null>(null);
+  const [generateSuccess, setGenerateSuccess] = useState<string | null>(null);
 
 
   const form = useForm<InvoiceFormData>({
@@ -130,12 +134,48 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
   }, [onDataChange, invoiceData]);
 
 
-  const onSubmit = (data: InvoiceFormData) => {
-    console.log("Invoice data:", data);
-    // This will be used later for PDF generation and preview
+  const onSubmit = async (data: InvoiceFormData) => {
+    try {
+      setIsGenerating(true);
+      setGenerateError(null);
+      setGenerateSuccess(null);
+
+      // Validate required fields
+      if (!data.business.name) {
+        throw new Error("Business name is required");
+      }
+      if (!data.customer.name) {
+        throw new Error("Customer name is required");
+      }
+      if (!data.items[0]?.description) {
+        throw new Error("Item description is required");
+      }
+
+      // Generate PDF using the invoice data
+      const invoiceDataForPDF = invoiceData as InvoiceData;
+      await generateInvoicePDF(invoiceDataForPDF, {
+        filename: `invoice-${data.details.invoiceNumber}.pdf`,
+        autoDownload: true
+      });
+
+      setGenerateSuccess(`Invoice ${data.details.invoiceNumber} generated successfully!`);
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setGenerateSuccess(null), 3000);
+
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      setGenerateError(error instanceof Error ? error.message : "Failed to generate PDF");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const clearForm = () => {
+    // Clear any error or success messages
+    setGenerateError(null);
+    setGenerateSuccess(null);
+
     form.reset({
       business: {
         name: "",
@@ -503,12 +543,27 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
           </CardContent>
         </Card>
 
+        {/* Success Message */}
+        {generateSuccess && (
+          <div className="p-3 sm:p-4 bg-green-50 border border-green-200 rounded-md">
+            <p className="text-sm text-green-700 font-medium">✓ {generateSuccess}</p>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {generateError && (
+          <div className="p-3 sm:p-4 bg-destructive/10 border border-destructive/20 rounded-md">
+            <p className="text-sm text-destructive font-medium">Error: {generateError}</p>
+          </div>
+        )}
+
         {/* Form Actions */}
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-end">
           <Button
             type="button"
             variant="outline"
             onClick={clearForm}
+            disabled={isGenerating}
             className="flex items-center justify-center gap-2 text-sm sm:text-base h-10 sm:h-auto"
           >
             <Trash className="w-4 h-4" />
@@ -516,10 +571,11 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
           </Button>
           <Button
             type="submit"
+            disabled={isGenerating}
             className="flex items-center justify-center gap-2 text-sm sm:text-base h-10 sm:h-auto"
           >
-            <FloppyDisk className="w-4 h-4" />
-            Generate Invoice
+            <DownloadSimple className="w-4 h-4" />
+            {isGenerating ? "Generating PDF..." : "Generate Invoice"}
           </Button>
         </div>
       </form>

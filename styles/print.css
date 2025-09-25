@@ -1,0 +1,228 @@
+/* Print-optimized styles for invoice generation */
+
+@media print {
+  /* Page setup */
+  @page {
+    margin: 0.5in;
+    size: A4;
+  }
+
+  /* Hide non-printable elements */
+  .print\:hidden,
+  header,
+  .print\:hide,
+  button,
+  input,
+  select,
+  textarea,
+  form,
+  .form-actions {
+    display: none !important;
+  }
+
+  /* Reset colors for print */
+  * {
+    color: black !important;
+    background: white !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Ensure invoice preview takes full width */
+  .invoice-preview,
+  .invoice-container {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Typography optimizations for print */
+  body {
+    font-family: "Times New Roman", Times, serif !important;
+    font-size: 12pt !important;
+    line-height: 1.4 !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: "Times New Roman", Times, serif !important;
+    color: black !important;
+  }
+
+  h1 {
+    font-size: 24pt !important;
+    font-weight: bold !important;
+    margin-bottom: 12pt !important;
+  }
+
+  h2 {
+    font-size: 18pt !important;
+    font-weight: bold !important;
+    margin-bottom: 10pt !important;
+  }
+
+  h3 {
+    font-size: 14pt !important;
+    font-weight: bold !important;
+    margin-bottom: 8pt !important;
+  }
+
+  /* Table optimizations */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    margin: 12pt 0 !important;
+    page-break-inside: avoid !important;
+  }
+
+  th, td {
+    padding: 6pt 8pt !important;
+    border: 1px solid black !important;
+    text-align: left !important;
+    vertical-align: top !important;
+    font-size: 10pt !important;
+  }
+
+  th {
+    background-color: #f0f0f0 !important;
+    font-weight: bold !important;
+  }
+
+  /* Spacing and layout */
+  .invoice-section {
+    margin-bottom: 18pt !important;
+    page-break-inside: avoid !important;
+  }
+
+  .invoice-header {
+    margin-bottom: 24pt !important;
+    page-break-after: avoid !important;
+  }
+
+  .invoice-totals {
+    margin-top: 18pt !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Ensure proper text wrapping */
+  .text-wrap,
+  .break-words {
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+  }
+
+  /* Remove any borders or shadows from cards/containers */
+  .card,
+  .container,
+  .border {
+    border: none !important;
+    box-shadow: none !important;
+    background: white !important;
+  }
+
+  /* Optimize spacing for print */
+  .space-y-4 > * + * {
+    margin-top: 12pt !important;
+  }
+
+  .space-y-6 > * + * {
+    margin-top: 18pt !important;
+  }
+
+  /* Ensure separators are visible */
+  hr,
+  .separator {
+    border: none !important;
+    border-top: 1px solid black !important;
+    margin: 12pt 0 !important;
+  }
+
+  /* Footer and page breaks */
+  .invoice-footer {
+    margin-top: 24pt !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* Avoid breaking important elements */
+  .no-break,
+  .business-info,
+  .customer-info,
+  .invoice-details,
+  .totals-section {
+    page-break-inside: avoid !important;
+  }
+
+  /* Ensure links are readable in print */
+  a::after {
+    content: " (" attr(href) ")" !important;
+    font-size: 9pt !important;
+  }
+
+  /* Hide decorative elements */
+  .bg-primary,
+  .bg-card,
+  .bg-muted,
+  .icon,
+  .avatar {
+    display: none !important;
+  }
+
+  /* Money formatting */
+  .currency,
+  .total,
+  .amount {
+    font-family: "Courier New", monospace !important;
+    font-weight: bold !important;
+    text-align: right !important;
+  }
+
+  /* Date formatting */
+  .date {
+    font-weight: normal !important;
+  }
+
+  /* Business and customer information layout */
+  .info-section {
+    margin-bottom: 18pt !important;
+  }
+
+  .info-label {
+    font-weight: bold !important;
+    margin-bottom: 6pt !important;
+  }
+
+  /* Payment instructions */
+  .payment-instructions {
+    margin-top: 24pt !important;
+    font-size: 10pt !important;
+    line-height: 1.3 !important;
+  }
+
+  /* Thank you message */
+  .thank-you {
+    text-align: center !important;
+    margin-top: 36pt !important;
+    font-style: italic !important;
+  }
+}
+
+/* Screen-only styles for print preview */
+@media screen {
+  .print-preview {
+    background: white;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    max-width: 8.5in;
+    min-height: 11in;
+    margin: 0 auto;
+    padding: 0.5in;
+  }
+
+  .print-preview * {
+    color: black !important;
+  }
+
+  .print-preview .print\:hidden {
+    display: none;
+  }
+}
