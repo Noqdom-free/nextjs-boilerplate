@@ -116,8 +116,12 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
       items: validItems
     };
   }, [
-    // Individual primitive values for each item field
-    ...items.flatMap(item => [item.description, item.quantity, item.unitPrice]),
+    // JSON stringify approach to avoid dynamic dependency array size
+    JSON.stringify(items.map(item => ({
+      description: item.description,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice
+    }))),
     taxRate
   ]);
 
