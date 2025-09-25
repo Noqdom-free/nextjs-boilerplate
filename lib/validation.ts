@@ -45,6 +45,18 @@ export const invoiceFormSchema = z.object({
   details: invoiceDetailsSchema,
   items: z.array(lineItemSchema).min(1, 'At least one item is required'),
   tax: taxInfoSchema,
+}).refine((data) => {
+  // Validate that issue date is not after due date
+  const issueDate = data.details.issueDate;
+  const dueDate = data.details.dueDate;
+
+  if (issueDate && dueDate) {
+    return issueDate <= dueDate;
+  }
+  return true; // Allow if either date is missing
+}, {
+  message: "Due date cannot be before issue date",
+  path: ["details", "dueDate"] // Show error on due date field
 });
 
 export type BusinessInfoFormData = z.infer<typeof businessInfoSchema>;

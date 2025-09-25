@@ -19,6 +19,11 @@ export function generateInvoiceNumber(): string {
 }
 
 export function formatDate(date: Date): string {
+  // Handle invalid dates gracefully to prevent crashes
+  if (!date || isNaN(date.getTime())) {
+    return "--";
+  }
+
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'long',
