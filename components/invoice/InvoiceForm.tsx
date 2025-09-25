@@ -115,7 +115,11 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
       total,
       items: validItems
     };
-  }, [items, taxRate]);
+  }, [
+    // Individual primitive values for each item field
+    ...items.flatMap(item => [item.description, item.quantity, item.unitPrice]),
+    taxRate
+  ]);
 
   // Invoice data with multiple items support
   const invoiceData = useMemo(() => ({
