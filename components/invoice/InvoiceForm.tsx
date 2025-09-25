@@ -171,8 +171,8 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
   };
 
   return (
-    <div className="space-y-6">
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
         {/* Business Information */}
         <Card>
           <CardHeader>
@@ -184,14 +184,15 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
               Enter your business details that will appear on the invoice
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="business.name">Business Name *</Label>
+                <Label htmlFor="business.name" className="text-sm sm:text-base">Business Name *</Label>
                 <Input
                   id="business.name"
                   {...form.register("business.name")}
                   placeholder="Your Business Name"
+                  className="text-sm sm:text-base"
                 />
                 {form.formState.errors.business?.name && (
                   <p className="text-sm text-destructive">
@@ -200,12 +201,13 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="business.email">Email</Label>
+                <Label htmlFor="business.email" className="text-sm sm:text-base">Email</Label>
                 <Input
                   id="business.email"
                   type="email"
                   {...form.register("business.email")}
                   placeholder="business@example.com"
+                  className="text-sm sm:text-base"
                 />
                 {form.formState.errors.business?.email && (
                   <p className="text-sm text-destructive">
@@ -214,21 +216,23 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                 )}
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="business.address">Address</Label>
+                <Label htmlFor="business.address" className="text-sm sm:text-base">Address</Label>
                 <Input
                   id="business.address"
                   {...form.register("business.address")}
                   placeholder="123 Business St, City, State, ZIP"
+                  className="text-sm sm:text-base"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="business.phone">Phone</Label>
+                <Label htmlFor="business.phone" className="text-sm sm:text-base">Phone</Label>
                 <Input
                   id="business.phone"
                   {...form.register("business.phone")}
                   placeholder="(555) 123-4567"
+                  className="text-sm sm:text-base"
                 />
               </div>
             </div>
@@ -246,14 +250,15 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
               Enter the customer's billing information
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="customer.name">Customer Name *</Label>
+                <Label htmlFor="customer.name" className="text-sm sm:text-base">Customer Name *</Label>
                 <Input
                   id="customer.name"
                   {...form.register("customer.name")}
                   placeholder="Customer Name"
+                  className="text-sm sm:text-base"
                 />
                 {form.formState.errors.customer?.name && (
                   <p className="text-sm text-destructive">
@@ -262,30 +267,33 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="customer.email">Email</Label>
+                <Label htmlFor="customer.email" className="text-sm sm:text-base">Email</Label>
                 <Input
                   id="customer.email"
                   type="email"
                   {...form.register("customer.email")}
                   placeholder="customer@example.com"
+                  className="text-sm sm:text-base"
                 />
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="customer.address">Address</Label>
+                <Label htmlFor="customer.address" className="text-sm sm:text-base">Address</Label>
                 <Input
                   id="customer.address"
                   {...form.register("customer.address")}
                   placeholder="123 Customer St, City, State, ZIP"
+                  className="text-sm sm:text-base"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="customer.phone">Phone</Label>
+                <Label htmlFor="customer.phone" className="text-sm sm:text-base">Phone</Label>
                 <Input
                   id="customer.phone"
                   {...form.register("customer.phone")}
                   placeholder="(555) 987-6543"
+                  className="text-sm sm:text-base"
                 />
               </div>
             </div>
@@ -303,14 +311,15 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
               Set invoice number, dates, and payment terms
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="details.invoiceNumber">Invoice Number *</Label>
+                <Label htmlFor="details.invoiceNumber" className="text-sm sm:text-base">Invoice Number *</Label>
                 <Input
                   id="details.invoiceNumber"
                   {...form.register("details.invoiceNumber")}
                   placeholder="INV-001"
+                  className="text-sm sm:text-base"
                 />
                 {form.formState.errors.details?.invoiceNumber && (
                   <p className="text-sm text-destructive">
@@ -319,23 +328,25 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="details.issueDate">Issue Date *</Label>
+                <Label htmlFor="details.issueDate" className="text-sm sm:text-base">Issue Date *</Label>
                 <Input
                   id="details.issueDate"
                   type="date"
                   {...form.register("details.issueDate", {
                     valueAsDate: true
                   })}
+                  className="text-sm sm:text-base"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="details.dueDate">Due Date *</Label>
+                <Label htmlFor="details.dueDate" className="text-sm sm:text-base">Due Date *</Label>
                 <Input
                   id="details.dueDate"
                   type="date"
                   {...form.register("details.dueDate", {
                     valueAsDate: true
                   })}
+                  className="text-sm sm:text-base"
                 />
                 {form.formState.errors.details?.dueDate && (
                   <p className="text-sm text-destructive">
@@ -344,12 +355,12 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                 )}
               </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="details.paymentTerms">Payment Terms *</Label>
+            <div className="space-y-2 sm:col-span-2 lg:col-span-3">
+              <Label htmlFor="details.paymentTerms" className="text-sm sm:text-base">Payment Terms *</Label>
               <select
                 id="details.paymentTerms"
                 {...form.register("details.paymentTerms")}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {Object.entries(PAYMENT_TERMS_OPTIONS).map(([key, label]) => (
                   <option key={key} value={key}>
@@ -372,13 +383,14 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
               Enter the item or service being invoiced
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
             <div className="space-y-2">
-              <Label htmlFor="items.0.description">Description *</Label>
+              <Label htmlFor="items.0.description" className="text-sm sm:text-base">Description *</Label>
               <Input
                 id="items.0.description"
                 {...form.register("items.0.description")}
                 placeholder="Description of item or service"
+                className="text-sm sm:text-base"
               />
               {form.formState.errors.items?.[0]?.description && (
                 <p className="text-sm text-destructive">
@@ -386,9 +398,9 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                 </p>
               )}
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <div className="space-y-2">
-                <Label htmlFor="items.0.quantity">Quantity *</Label>
+                <Label htmlFor="items.0.quantity" className="text-sm sm:text-base">Quantity *</Label>
                 <Input
                   id="items.0.quantity"
                   type="number"
@@ -399,6 +411,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                     const value = e.target.value === '' ? 1 : parseFloat(e.target.value) || 1;
                     form.setValue("items.0.quantity", value);
                   }}
+                  className="text-sm sm:text-base"
                 />
                 {form.formState.errors.items?.[0]?.quantity && (
                   <p className="text-sm text-destructive">
@@ -407,7 +420,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="items.0.unitPrice">Unit Price *</Label>
+                <Label htmlFor="items.0.unitPrice" className="text-sm sm:text-base">Price *</Label>
                 <Input
                   id="items.0.unitPrice"
                   type="number"
@@ -418,6 +431,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                     const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
                     form.setValue("items.0.unitPrice", value);
                   }}
+                  className="text-sm sm:text-base"
                 />
                 {form.formState.errors.items?.[0]?.unitPrice && (
                   <p className="text-sm text-destructive">
@@ -426,8 +440,8 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                 )}
               </div>
               <div className="space-y-2">
-                <Label>Line Total</Label>
-                <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm">
+                <Label className="text-sm sm:text-base">Line Total</Label>
+                <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm sm:text-base items-center">
                   {formatCurrency(calculations.items[0]?.total || 0)}
                 </div>
               </div>
@@ -446,10 +460,10 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
               Add tax rate and view calculated totals
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
               <div className="space-y-2">
-                <Label htmlFor="tax.rate">Tax Rate (%)</Label>
+                <Label htmlFor="tax.rate" className="text-sm sm:text-base">Tax Rate (%)</Label>
                 <Input
                   id="tax.rate"
                   type="number"
@@ -462,6 +476,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                     form.setValue("tax.rate", value);
                   }}
                   placeholder="0.00"
+                  className="text-sm sm:text-base"
                 />
                 {form.formState.errors.tax?.rate && (
                   <p className="text-sm text-destructive">
@@ -471,17 +486,17 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
               </div>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Subtotal:</span>
-                  <span className="text-sm">{formatCurrency(calculations.subtotal)}</span>
+                  <span className="text-sm sm:text-base font-medium">Subtotal:</span>
+                  <span className="text-sm sm:text-base">{formatCurrency(calculations.subtotal)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-medium">Tax:</span>
-                  <span className="text-sm">{formatCurrency(calculations.taxAmount)}</span>
+                  <span className="text-sm sm:text-base font-medium">Tax:</span>
+                  <span className="text-sm sm:text-base">{formatCurrency(calculations.taxAmount)}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold">Total:</span>
-                  <span className="text-lg font-bold">{formatCurrency(calculations.total)}</span>
+                  <span className="text-base sm:text-lg font-bold">Total:</span>
+                  <span className="text-base sm:text-lg font-bold">{formatCurrency(calculations.total)}</span>
                 </div>
               </div>
             </div>
@@ -489,19 +504,19 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
         </Card>
 
         {/* Form Actions */}
-        <div className="flex gap-4 justify-end">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 sm:justify-end">
           <Button
             type="button"
             variant="outline"
             onClick={clearForm}
-            className="flex items-center gap-2"
+            className="flex items-center justify-center gap-2 text-sm sm:text-base h-10 sm:h-auto"
           >
             <Trash className="w-4 h-4" />
             Clear Form
           </Button>
           <Button
             type="submit"
-            className="flex items-center gap-2"
+            className="flex items-center justify-center gap-2 text-sm sm:text-base h-10 sm:h-auto"
           >
             <FloppyDisk className="w-4 h-4" />
             Generate Invoice

@@ -27,103 +27,103 @@ export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview(
   const calculations = data.calculations || { subtotal: 0, taxAmount: 0, total: 0 };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-6 print:p-4 print:space-y-4">
+    <div className="max-w-4xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 print:p-4 print:space-y-4">
       <Card className="print:shadow-none print:border-none">
-        <CardContent className="p-6 print:p-0">
+        <CardContent className="p-4 sm:p-6 print:p-0">
           {/* Invoice Header */}
-          <div className="flex justify-between items-start mb-8 print:mb-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-6 sm:mb-8 print:mb-6 space-y-4 sm:space-y-0">
             <div className="space-y-2">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-primary rounded flex items-center justify-center print:bg-black">
-                  <span className="text-white text-sm font-bold">$</span>
+              <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-primary rounded flex items-center justify-center print:bg-black">
+                  <span className="text-white text-xs sm:text-sm font-bold">$</span>
                 </div>
-                <h1 className="text-3xl font-bold text-primary print:text-black">INVOICE</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-primary print:text-black">INVOICE</h1>
               </div>
               <div className="text-sm text-muted-foreground print:text-black">
-                <p className="font-semibold text-lg text-foreground print:text-black">
+                <p className="font-semibold text-base sm:text-lg text-foreground print:text-black break-words">
                   {business.name || "Your Business Name"}
                 </p>
-                {business.address && <p>{business.address}</p>}
-                <div className="flex gap-4 mt-1">
-                  {business.phone && <p>Phone: {business.phone}</p>}
-                  {business.email && <p>Email: {business.email}</p>}
+                {business.address && <p className="break-words">{business.address}</p>}
+                <div className="flex flex-col sm:flex-row sm:gap-4 mt-1 space-y-1 sm:space-y-0">
+                  {business.phone && <p className="break-words">Phone: {business.phone}</p>}
+                  {business.email && <p className="break-words">Email: {business.email}</p>}
                 </div>
               </div>
             </div>
-            <div className="text-right space-y-1 text-sm">
+            <div className="sm:text-right space-y-1 text-sm">
               <div className="space-y-1">
-                <p className="font-medium text-foreground print:text-black">
+                <p className="font-medium text-foreground print:text-black break-words">
                   Invoice #: {details.invoiceNumber || "INV-000"}
                 </p>
-                <p className="text-muted-foreground print:text-black">
+                <p className="text-muted-foreground print:text-black break-words">
                   Issue Date: {details.issueDate ? formatDate(details.issueDate) : formatDate(new Date())}
                 </p>
-                <p className="font-medium text-foreground print:text-black">
+                <p className="font-medium text-foreground print:text-black break-words">
                   Due Date: {details.dueDate ? formatDate(details.dueDate) : "Not set"}
                 </p>
-                <p className="text-muted-foreground print:text-black">
+                <p className="text-muted-foreground print:text-black break-words">
                   Terms: {details.paymentTerms ? PAYMENT_TERMS_OPTIONS[details.paymentTerms as keyof typeof PAYMENT_TERMS_OPTIONS] : "Net 30"}
                 </p>
               </div>
             </div>
           </div>
 
-          <Separator className="my-6 print:my-4" />
+          <Separator className="my-4 sm:my-6 print:my-4" />
 
           {/* Bill To Section */}
-          <div className="mb-8 print:mb-6">
-            <h3 className="text-lg font-semibold mb-3 print:text-black">Bill To:</h3>
+          <div className="mb-6 sm:mb-8 print:mb-6">
+            <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 print:text-black">Bill To:</h3>
             <div className="text-sm space-y-1">
-              <p className="font-medium text-foreground print:text-black">
+              <p className="font-medium text-foreground print:text-black break-words">
                 {customer.name || "Customer Name"}
               </p>
-              {customer.address && <p className="text-muted-foreground print:text-black">{customer.address}</p>}
-              <div className="flex gap-4 text-muted-foreground print:text-black">
-                {customer.phone && <p>Phone: {customer.phone}</p>}
-                {customer.email && <p>Email: {customer.email}</p>}
+              {customer.address && <p className="text-muted-foreground print:text-black break-words">{customer.address}</p>}
+              <div className="flex flex-col sm:flex-row sm:gap-4 text-muted-foreground print:text-black space-y-1 sm:space-y-0">
+                {customer.phone && <p className="break-words">Phone: {customer.phone}</p>}
+                {customer.email && <p className="break-words">Email: {customer.email}</p>}
               </div>
             </div>
           </div>
 
           {/* Items Table */}
-          <div className="mb-8 print:mb-6">
+          <div className="mb-6 sm:mb-8 print:mb-6 overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow className="print:border-black">
-                  <TableHead className="font-semibold print:text-black">Description</TableHead>
-                  <TableHead className="text-center font-semibold print:text-black">Qty</TableHead>
-                  <TableHead className="text-right font-semibold print:text-black">Unit Price</TableHead>
-                  <TableHead className="text-right font-semibold print:text-black">Total</TableHead>
+                  <TableHead className="font-semibold print:text-black text-xs sm:text-sm min-w-[100px]">Description</TableHead>
+                  <TableHead className="text-center font-semibold print:text-black text-xs sm:text-sm w-12 sm:w-16">Qty</TableHead>
+                  <TableHead className="text-right font-semibold print:text-black text-xs sm:text-sm w-16 sm:w-20">Price</TableHead>
+                  <TableHead className="text-right font-semibold print:text-black text-xs sm:text-sm w-16 sm:w-24">Total</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {items.length > 0 ? (
                   items.map((item, index) => (
                     <TableRow key={item.id || index} className="print:border-black">
-                      <TableCell className="print:text-black">
+                      <TableCell className="print:text-black text-xs sm:text-sm break-words min-w-[100px]">
                         {item.description || "Item description"}
                       </TableCell>
-                      <TableCell className="text-center print:text-black">
+                      <TableCell className="text-center print:text-black text-xs sm:text-sm w-12 sm:w-16">
                         {item.quantity || 1}
                       </TableCell>
-                      <TableCell className="text-right print:text-black">
+                      <TableCell className="text-right print:text-black text-xs sm:text-sm whitespace-nowrap w-16 sm:w-20">
                         {formatCurrency(item.unitPrice || 0)}
                       </TableCell>
-                      <TableCell className="text-right print:text-black">
+                      <TableCell className="text-right print:text-black text-xs sm:text-sm whitespace-nowrap w-16 sm:w-24">
                         {formatCurrency(item.total || 0)}
                       </TableCell>
                     </TableRow>
                   ))
                 ) : (
                   <TableRow className="print:border-black">
-                    <TableCell className="text-muted-foreground italic print:text-black">
+                    <TableCell className="text-muted-foreground italic print:text-black text-xs sm:text-sm break-words min-w-[100px]">
                       Item description
                     </TableCell>
-                    <TableCell className="text-center text-muted-foreground print:text-black">1</TableCell>
-                    <TableCell className="text-right text-muted-foreground print:text-black">
+                    <TableCell className="text-center text-muted-foreground print:text-black text-xs sm:text-sm w-12 sm:w-16">1</TableCell>
+                    <TableCell className="text-right text-muted-foreground print:text-black text-xs sm:text-sm whitespace-nowrap w-16 sm:w-20">
                       {formatCurrency(0)}
                     </TableCell>
-                    <TableCell className="text-right text-muted-foreground print:text-black">
+                    <TableCell className="text-right text-muted-foreground print:text-black text-xs sm:text-sm whitespace-nowrap w-16 sm:w-24">
                       {formatCurrency(0)}
                     </TableCell>
                   </TableRow>
@@ -133,44 +133,44 @@ export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview(
           </div>
 
           {/* Totals Section */}
-          <div className="flex justify-end mb-8 print:mb-6">
-            <div className="w-72 space-y-3">
+          <div className="flex justify-end mb-6 sm:mb-8 print:mb-6">
+            <div className="w-full max-w-xs sm:w-72 space-y-3">
               <div className="flex justify-between items-center pb-2">
-                <span className="text-sm font-medium print:text-black">Subtotal:</span>
-                <span className="text-sm print:text-black">{formatCurrency(calculations.subtotal)}</span>
+                <span className="text-xs sm:text-sm font-medium print:text-black">Subtotal:</span>
+                <span className="text-xs sm:text-sm print:text-black whitespace-nowrap">{formatCurrency(calculations.subtotal)}</span>
               </div>
               {tax.rate > 0 && (
                 <div className="flex justify-between items-center pb-2">
-                  <span className="text-sm font-medium print:text-black">Tax ({tax.rate}%):</span>
-                  <span className="text-sm print:text-black">{formatCurrency(calculations.taxAmount)}</span>
+                  <span className="text-xs sm:text-sm font-medium print:text-black">Tax ({tax.rate}%):</span>
+                  <span className="text-xs sm:text-sm print:text-black whitespace-nowrap">{formatCurrency(calculations.taxAmount)}</span>
                 </div>
               )}
               <Separator className="print:border-black" />
               <div className="flex justify-between items-center pt-2">
-                <span className="text-lg font-bold print:text-black">Total:</span>
-                <span className="text-lg font-bold print:text-black">{formatCurrency(calculations.total)}</span>
+                <span className="text-base sm:text-lg font-bold print:text-black">Total:</span>
+                <span className="text-base sm:text-lg font-bold print:text-black whitespace-nowrap">{formatCurrency(calculations.total)}</span>
               </div>
             </div>
           </div>
 
           {/* Payment Instructions */}
-          <div className="mt-8 pt-6 border-t print:mt-6 print:pt-4 print:border-black">
-            <h3 className="text-sm font-semibold mb-2 print:text-black">Payment Instructions:</h3>
+          <div className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t print:mt-6 print:pt-4 print:border-black">
+            <h3 className="text-xs sm:text-sm font-semibold mb-2 print:text-black">Payment Instructions:</h3>
             <div className="text-xs text-muted-foreground space-y-1 print:text-black">
-              <p>Please remit payment by the due date specified above.</p>
-              <p>For questions regarding this invoice, please contact {business.email || "your business email"}.</p>
+              <p className="break-words">Please remit payment by the due date specified above.</p>
+              <p className="break-words">For questions regarding this invoice, please contact {business.email || "your business email"}.</p>
               {details.notes && (
                 <div className="mt-3">
                   <p className="font-medium print:text-black">Notes:</p>
-                  <p className="mt-1 print:text-black">{details.notes}</p>
+                  <p className="mt-1 print:text-black break-words">{details.notes}</p>
                 </div>
               )}
             </div>
           </div>
 
           {/* Thank You */}
-          <div className="mt-6 text-center print:mt-4">
-            <p className="text-sm text-muted-foreground print:text-black">
+          <div className="mt-4 sm:mt-6 text-center print:mt-4">
+            <p className="text-xs sm:text-sm text-muted-foreground print:text-black">
               Thank you for your business!
             </p>
           </div>

@@ -24,3 +24,54 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Mobile-specific improvements */
+@media (max-width: 640px) {
+  /* Ensure text doesn't overflow on mobile */
+  * {
+    word-break: break-word;
+    overflow-wrap: break-word;
+  }
+
+  /* Improve touch targets on mobile */
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"] {
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+
+  /* Better mobile typography */
+  body {
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Prevent zoom on input focus */
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  input[type="date"],
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* Better mobile table scrolling */
+  .table-container {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Improve card spacing on mobile */
+  .mobile-card-spacing {
+    margin-bottom: 1rem;
+  }
+
+  /* Better mobile form field alignment */
+  .mobile-form-field {
+    width: 100%;
+    max-width: 100%;
+  }
+}
