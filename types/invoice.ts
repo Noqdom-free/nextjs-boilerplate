@@ -1,3 +1,6 @@
+import { Country, CountryBankingInfo } from './banking';
+import { PaymentLinksData } from './payment';
+
 export interface BusinessInfo {
   name: string;
   address?: string;
@@ -52,6 +55,10 @@ export interface InvoiceData {
   tax: TaxInfo;
   calculations: InvoiceCalculations;
   paymentInstructions?: PaymentInstructions;
+  // New payment features - all optional for backward compatibility
+  selectedCountry?: Country;
+  bankingInfo?: CountryBankingInfo;
+  paymentLinks?: PaymentLinksData;
 }
 
 export type PaymentTermsOption =

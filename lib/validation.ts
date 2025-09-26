@@ -1,4 +1,11 @@
 import { z } from 'zod';
+import { Country } from '@/types/banking';
+import { PaymentMethod } from '@/types/payment';
+import {
+  validateBankingField,
+  validatePaymentURL,
+  BANKING_FORMAT_MESSAGES
+} from '@/lib/constants';
 
 export const businessInfoSchema = z.object({
   name: z.string().min(1, 'Business name is required').max(100, 'Business name too long'),
@@ -65,3 +72,135 @@ export type LineItemFormData = z.infer<typeof lineItemSchema>;
 export type InvoiceDetailsFormData = z.infer<typeof invoiceDetailsSchema>;
 export type TaxInfoFormData = z.infer<typeof taxInfoSchema>;
 export type InvoiceFormData = z.infer<typeof invoiceFormSchema>;
+
+// Banking validation schemas by country
+export const usBankingSchema = z.object({
+  bankName: z.string().min(1, 'Bank name is required').max(100, 'Bank name too long'),
+  routingNumber: z.string()
+    .min(1, 'Routing number is required')
+    .refine((val) => validateBankingField(Country.US, 'routingNumber', val), {
+      message: BANKING_FORMAT_MESSAGES.US.routingNumber
+    }),
+  accountNumber: z.string()
+    .min(1, 'Account number is required')
+    .refine((val) => validateBankingField(Country.US, 'accountNumber', val), {
+      message: BANKING_FORMAT_MESSAGES.US.accountNumber
+    }),
+  accountHolderName: z.string().min(1, 'Account holder name is required').max(100, 'Name too long'),
+  bankAddress: z.string().max(200, 'Address too long').optional()
+});
+
+export const euBankingSchema = z.object({
+  bankName: z.string().min(1, 'Bank name is required').max(100, 'Bank name too long'),
+  iban: z.string()
+    .min(1, 'IBAN is required')
+    .refine((val) => validateBankingField(Country.EU, 'iban', val), {
+      message: BANKING_FORMAT_MESSAGES.EU.iban
+    }),
+  bicSwiftCode: z.string()
+    .min(1, 'BIC/SWIFT code is required')
+    .refine((val) => validateBankingField(Country.EU, 'bicSwiftCode', val), {
+      message: BANKING_FORMAT_MESSAGES.EU.bicSwiftCode
+    }),
+  accountHolderName: z.string().min(1, 'Account holder name is required').max(100, 'Name too long'),
+  bankAddress: z.string().max(200, 'Address too long').optional()
+});
+
+export const ukBankingSchema = z.object({
+  bankName: z.string().min(1, 'Bank name is required').max(100, 'Bank name too long'),
+  sortCode: z.string()
+    .min(1, 'Sort code is required')
+    .refine((val) => validateBankingField(Country.UK, 'sortCode', val), {
+      message: BANKING_FORMAT_MESSAGES.UK.sortCode
+    }),
+  accountNumber: z.string()
+    .min(1, 'Account number is required')
+    .refine((val) => validateBankingField(Country.UK, 'accountNumber', val), {
+      message: BANKING_FORMAT_MESSAGES.UK.accountNumber
+    }),
+  accountHolderName: z.string().min(1, 'Account holder name is required').max(100, 'Name too long'),
+  bankAddress: z.string().max(200, 'Address too long').optional()
+});
+
+export const caBankingSchema = z.object({
+  bankName: z.string().min(1, 'Bank name is required').max(100, 'Bank name too long'),
+  institutionNumber: z.string()
+    .min(1, 'Institution number is required')
+    .refine((val) => validateBankingField(Country.CA, 'institutionNumber', val), {
+      message: BANKING_FORMAT_MESSAGES.CA.institutionNumber
+    }),
+  transitNumber: z.string()
+    .min(1, 'Transit number is required')
+    .refine((val) => validateBankingField(Country.CA, 'transitNumber', val), {
+      message: BANKING_FORMAT_MESSAGES.CA.transitNumber
+    }),
+  accountNumber: z.string()
+    .min(1, 'Account number is required')
+    .refine((val) => validateBankingField(Country.CA, 'accountNumber', val), {
+      message: BANKING_FORMAT_MESSAGES.CA.accountNumber
+    }),
+  accountHolderName: z.string().min(1, 'Account holder name is required').max(100, 'Name too long'),
+  bankAddress: z.string().max(200, 'Address too long').optional()
+});
+
+export const auBankingSchema = z.object({
+  bankName: z.string().min(1, 'Bank name is required').max(100, 'Bank name too long'),
+  bsbNumber: z.string()
+    .min(1, 'BSB number is required')
+    .refine((val) => validateBankingField(Country.AU, 'bsbNumber', val), {
+      message: BANKING_FORMAT_MESSAGES.AU.bsbNumber
+    }),
+  accountNumber: z.string()
+    .min(1, 'Account number is required')
+    .refine((val) => validateBankingField(Country.AU, 'accountNumber', val), {
+      message: BANKING_FORMAT_MESSAGES.AU.accountNumber
+    }),
+  accountHolderName: z.string().min(1, 'Account holder name is required').max(100, 'Name too long'),
+  bankAddress: z.string().max(200, 'Address too long').optional()
+});
+
+// Payment link validation schema
+export const paymentLinkSchema = z.object({
+  id: z.string(),
+  method: z.nativeEnum(PaymentMethod),
+  url: z.string()
+    .min(1, 'Payment URL is required')
+    .refine((val) => validatePaymentURL(val), {
+      message: 'Must be a valid URL starting with http:// or https://'
+    }),
+  displayName: z.string().max(50, 'Display name too long').optional(),
+  isEnabled: z.boolean(),
+  instructions: z.string().max(200, 'Instructions too long').optional()
+});
+
+export const paymentLinksDataSchema = z.object({
+  links: z.array(paymentLinkSchema),
+  globalInstructions: z.string().max(500, 'Instructions too long').optional()
+});
+
+// Helper function to get banking schema by country
+export const getBankingSchema = (country: Country) => {
+  switch (country) {
+    case Country.US:
+      return usBankingSchema;
+    case Country.EU:
+      return euBankingSchema;
+    case Country.UK:
+      return ukBankingSchema;
+    case Country.CA:
+      return caBankingSchema;
+    case Country.AU:
+      return auBankingSchema;
+    default:
+      throw new Error(`Unsupported country: ${country}`);
+  }
+};
+
+// Type exports for banking schemas
+export type USBankingFormData = z.infer<typeof usBankingSchema>;
+export type EUBankingFormData = z.infer<typeof euBankingSchema>;
+export type UKBankingFormData = z.infer<typeof ukBankingSchema>;
+export type CABankingFormData = z.infer<typeof caBankingSchema>;
+export type AUBankingFormData = z.infer<typeof auBankingSchema>;
+export type PaymentLinkFormData = z.infer<typeof paymentLinkSchema>;
+export type PaymentLinksDataFormData = z.infer<typeof paymentLinksDataSchema>;
