@@ -24,10 +24,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { PrivacyNotice } from "@/components/ui/PrivacyNotice";
+import { CountrySelector } from "@/components/ui/CountrySelector";
 import { ItemManager } from "./ItemManager";
+import { BankingForm } from "./BankingForm";
+import { PaymentLinksForm } from "./PaymentLinksForm";
 
 import { invoiceFormSchema, type InvoiceFormData } from "@/lib/validation";
 import { PAYMENT_TERMS_OPTIONS, DEFAULT_PAYMENT_TERMS, type PaymentTermsOption, type InvoiceData } from "@/types/invoice";
+import { Country } from "@/types/banking";
 import { generateInvoiceNumber, formatCurrency } from "@/lib/utils";
 import { generateInvoicePDF } from "@/lib/pdf-generator";
 
@@ -75,6 +79,12 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
       tax: {
         rate: 0,
         amount: 0
+      },
+      selectedCountry: undefined,
+      bankingInfo: {},
+      paymentLinks: {
+        links: [],
+        globalInstructions: ""
       }
     }
   });
@@ -83,6 +93,9 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
   const formData = form.watch();
   const items = formData.items || [];
   const taxRate = formData.tax?.rate || 0;
+  const selectedCountry = formData.selectedCountry;
+  const bankingInfo = formData.bankingInfo;
+  const paymentLinks = formData.paymentLinks;
 
   // Dynamic calculations for multiple items
   const calculations = useMemo(() => {
@@ -127,32 +140,67 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
   ]);
 
   // Invoice data with multiple items support
-  const invoiceData = useMemo(() => ({
-    business: formData.business,
-    customer: formData.customer,
-    details: formData.details,
-    items: calculations.items,
-    tax: {
-      rate: taxRate,
-      amount: calculations.taxAmount
-    },
-    calculations: {
-      subtotal: calculations.subtotal,
-      taxAmount: calculations.taxAmount,
-      total: calculations.total
+  const invoiceData = useMemo(() => {
+    const baseData = {
+      business: formData.business,
+      customer: formData.customer,
+      details: formData.details,
+      items: calculations.items,
+      tax: {
+        rate: taxRate,
+        amount: calculations.taxAmount
+      },
+      calculations: {
+        subtotal: calculations.subtotal,
+        taxAmount: calculations.taxAmount,
+        total: calculations.total
+      }
+    };
+
+    // Add optional payment features
+    let extendedData = { ...baseData };
+
+    // Add banking information if country is selected
+    if (selectedCountry && bankingInfo && Object.keys(bankingInfo).length > 0) {
+      extendedData = {
+        ...extendedData,
+        selectedCountry,
+        bankingInfo: {
+          country: selectedCountry,
+          data: bankingInfo
+        } as any // Temporary type assertion for dynamic banking data
+      } as any;
     }
-  }), [
+
+    // Add payment links if configured
+    if (paymentLinks && paymentLinks.links && paymentLinks.links.length > 0) {
+      extendedData = {
+        ...extendedData,
+        paymentLinks
+      } as any;
+    }
+
+    return extendedData;
+  }, [
     // Individual primitive values instead of object references
     formData.business?.name, formData.business?.email, formData.business?.address, formData.business?.phone,
     formData.customer?.name, formData.customer?.email, formData.customer?.address, formData.customer?.phone,
     formData.details?.invoiceNumber, formData.details?.issueDate, formData.details?.dueDate, formData.details?.paymentTerms, formData.details?.notes,
-    calculations.items, calculations.subtotal, calculations.taxAmount, calculations.total, taxRate
+    calculations.items, calculations.subtotal, calculations.taxAmount, calculations.total, taxRate,
+    selectedCountry, JSON.stringify(bankingInfo), JSON.stringify(paymentLinks)
   ]);
 
   // Send data to preview immediately on any form data change
   useEffect(() => {
     onDataChange(invoiceData);
   }, [onDataChange, invoiceData]);
+
+  // Handle country selection change
+  const handleCountryChange = (country: Country) => {
+    form.setValue('selectedCountry', country);
+    // Clear banking info when country changes
+    form.setValue('bankingInfo', {});
+  };
 
 
   const onSubmit = async (data: InvoiceFormData) => {
@@ -227,6 +275,12 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
       tax: {
         rate: 0,
         amount: 0
+      },
+      selectedCountry: undefined,
+      bankingInfo: {},
+      paymentLinks: {
+        links: [],
+        globalInstructions: ""
       }
     });
   };
@@ -363,6 +417,44 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
             </div>
           </CardContent>
         </Card>
+
+        {/* Payment Information */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CurrencyDollar className="w-5 h-5" />
+              Payment Information
+            </CardTitle>
+            <CardDescription>
+              Select your country and configure banking details for payment
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4 p-4 sm:p-6">
+            <CountrySelector
+              value={selectedCountry}
+              onChange={handleCountryChange}
+              error={form.formState.errors.selectedCountry?.message}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Banking Form */}
+        <BankingForm
+          selectedCountry={selectedCountry}
+          register={form.register}
+          errors={form.formState.errors}
+          setValue={form.setValue}
+          control={form.control}
+        />
+
+        {/* Payment Links Form */}
+        <PaymentLinksForm
+          register={form.register}
+          errors={form.formState.errors}
+          setValue={form.setValue}
+          control={form.control}
+          watch={form.watch}
+        />
 
         {/* Invoice Details */}
         <Card>

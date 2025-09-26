@@ -46,12 +46,34 @@ export const taxInfoSchema = z.object({
   amount: z.number().min(0, 'Tax amount cannot be negative'),
 });
 
+// Payment link validation schema
+export const paymentLinkSchema = z.object({
+  id: z.string(),
+  method: z.nativeEnum(PaymentMethod),
+  url: z.string()
+    .min(1, 'Payment URL is required')
+    .refine((val) => validatePaymentURL(val), {
+      message: 'Must be a valid URL starting with http:// or https://'
+    }),
+  displayName: z.string().max(50, 'Display name too long').optional(),
+  isEnabled: z.boolean(),
+  instructions: z.string().max(200, 'Instructions too long').optional()
+});
+
+export const paymentLinksDataSchema = z.object({
+  links: z.array(paymentLinkSchema),
+  globalInstructions: z.string().max(500, 'Instructions too long').optional()
+});
+
 export const invoiceFormSchema = z.object({
   business: businessInfoSchema,
   customer: customerInfoSchema,
   details: invoiceDetailsSchema,
   items: z.array(lineItemSchema).min(1, 'At least one item is required'),
   tax: taxInfoSchema,
+  selectedCountry: z.nativeEnum(Country).optional(),
+  bankingInfo: z.record(z.string(), z.any()).optional(), // Dynamic banking info based on country
+  paymentLinks: paymentLinksDataSchema.optional(), // Payment links configuration
 }).refine((data) => {
   // Validate that issue date is not after due date
   const issueDate = data.details.issueDate;
@@ -64,6 +86,34 @@ export const invoiceFormSchema = z.object({
 }, {
   message: "Due date cannot be before issue date",
   path: ["details", "dueDate"] // Show error on due date field
+}).refine((data) => {
+  // Validate banking info if country is selected
+  if (data.selectedCountry && data.bankingInfo) {
+    try {
+      const schema = getBankingSchema(data.selectedCountry);
+      schema.parse(data.bankingInfo);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  return true;
+}, {
+  message: "Invalid banking information for selected country",
+  path: ["bankingInfo"]
+}).refine((data) => {
+  // Validate payment links: URLs required when payment methods are enabled
+  if (data.paymentLinks?.links) {
+    for (const link of data.paymentLinks.links) {
+      if (link.isEnabled && (!link.url || !validatePaymentURL(link.url))) {
+        return false;
+      }
+    }
+  }
+  return true;
+}, {
+  message: "Payment URL is required for enabled payment methods",
+  path: ["paymentLinks", "links"]
 });
 
 export type BusinessInfoFormData = z.infer<typeof businessInfoSchema>;
@@ -157,25 +207,6 @@ export const auBankingSchema = z.object({
     }),
   accountHolderName: z.string().min(1, 'Account holder name is required').max(100, 'Name too long'),
   bankAddress: z.string().max(200, 'Address too long').optional()
-});
-
-// Payment link validation schema
-export const paymentLinkSchema = z.object({
-  id: z.string(),
-  method: z.nativeEnum(PaymentMethod),
-  url: z.string()
-    .min(1, 'Payment URL is required')
-    .refine((val) => validatePaymentURL(val), {
-      message: 'Must be a valid URL starting with http:// or https://'
-    }),
-  displayName: z.string().max(50, 'Display name too long').optional(),
-  isEnabled: z.boolean(),
-  instructions: z.string().max(200, 'Instructions too long').optional()
-});
-
-export const paymentLinksDataSchema = z.object({
-  links: z.array(paymentLinkSchema),
-  globalInstructions: z.string().max(500, 'Instructions too long').optional()
 });
 
 // Helper function to get banking schema by country
