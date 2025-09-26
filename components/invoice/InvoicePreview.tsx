@@ -7,9 +7,59 @@ import { Separator } from "@/components/ui/separator";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { PAYMENT_TERMS_OPTIONS } from "@/types/invoice";
 import type { InvoiceData } from "@/types/invoice";
+import { Country, COUNTRY_NAMES, type CountryBankingInfo } from "@/types/banking";
+import { type PaymentLinksData, type PaymentLinkConfig } from "@/types/payment";
 
 interface InvoicePreviewProps {
   data: Partial<InvoiceData>;
+}
+
+// Helper function to format banking information by country
+function formatBankingInfo(bankingInfo: CountryBankingInfo): string[] {
+  switch (bankingInfo.country) {
+    case Country.US:
+      return [
+        `Bank: ${bankingInfo.data.bankName}`,
+        `Routing Number: ${bankingInfo.data.routingNumber}`,
+        `Account Number: ${bankingInfo.data.accountNumber}`,
+        `Account Holder: ${bankingInfo.data.accountHolderName}`,
+        ...(bankingInfo.data.bankAddress ? [`Bank Address: ${bankingInfo.data.bankAddress}`] : [])
+      ];
+    case Country.EU:
+      return [
+        `Bank: ${bankingInfo.data.bankName}`,
+        `IBAN: ${bankingInfo.data.iban}`,
+        `BIC/SWIFT: ${bankingInfo.data.bicSwiftCode}`,
+        `Account Holder: ${bankingInfo.data.accountHolderName}`,
+        ...(bankingInfo.data.bankAddress ? [`Bank Address: ${bankingInfo.data.bankAddress}`] : [])
+      ];
+    case Country.UK:
+      return [
+        `Bank: ${bankingInfo.data.bankName}`,
+        `Sort Code: ${bankingInfo.data.sortCode}`,
+        `Account Number: ${bankingInfo.data.accountNumber}`,
+        `Account Holder: ${bankingInfo.data.accountHolderName}`,
+        ...(bankingInfo.data.bankAddress ? [`Bank Address: ${bankingInfo.data.bankAddress}`] : [])
+      ];
+    case Country.CA:
+      return [
+        `Bank: ${bankingInfo.data.bankName}`,
+        `Institution Number: ${bankingInfo.data.institutionNumber}`,
+        `Transit Number: ${bankingInfo.data.transitNumber}`,
+        `Account Number: ${bankingInfo.data.accountNumber}`,
+        `Account Holder: ${bankingInfo.data.accountHolderName}`
+      ];
+    case Country.AU:
+      return [
+        `Bank: ${bankingInfo.data.bankName}`,
+        `BSB Number: ${bankingInfo.data.bsbNumber}`,
+        `Account Number: ${bankingInfo.data.accountNumber}`,
+        `Account Holder: ${bankingInfo.data.accountHolderName}`,
+        ...(bankingInfo.data.bankAddress ? [`Bank Address: ${bankingInfo.data.bankAddress}`] : [])
+      ];
+    default:
+      return [];
+  }
 }
 
 export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview({ data }) {
@@ -25,6 +75,8 @@ export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview(
   const items = data.items || [];
   const tax = data.tax || { rate: 0, amount: 0 };
   const calculations = data.calculations || { subtotal: 0, taxAmount: 0, total: 0 };
+  const bankingInfo = data.bankingInfo;
+  const paymentLinks = data.paymentLinks;
 
   return (
     <div className="max-w-4xl mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6 print:p-4 print:space-y-4">
@@ -84,6 +136,61 @@ export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview(
               </div>
             </div>
           </div>
+
+          {/* Payment Information */}
+          {(bankingInfo || (paymentLinks && paymentLinks.links && paymentLinks.links.filter(link => link.isEnabled).length > 0)) && (
+            <>
+              <Separator className="my-4 sm:my-6 print:my-4" />
+              <div className="mb-6 sm:mb-8 print:mb-6">
+                <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-3 print:text-black">Payment Information:</h3>
+
+                {/* Banking Information */}
+                {bankingInfo && (
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium mb-2 print:text-black">Wire Transfer:</h4>
+                    <div className="text-sm space-y-1">
+                      {formatBankingInfo(bankingInfo).map((line, index) => (
+                        <p key={index} className="text-muted-foreground print:text-black break-words">{line}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Online Payment Options */}
+                {paymentLinks && paymentLinks.links && paymentLinks.links.filter(link => link.isEnabled).length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-sm font-medium mb-2 print:text-black">Online Payment Options:</h4>
+                    <div className="text-sm space-y-2">
+                      {paymentLinks.links
+                        .filter(link => link.isEnabled)
+                        .map((link, index) => (
+                          <div key={index} className="break-words">
+                            <p className="text-primary hover:text-primary/80 print:text-black font-medium cursor-pointer">
+                              {link.displayName || `Pay with ${link.method.charAt(0).toUpperCase() + link.method.slice(1)}`}
+                            </p>
+                            <p className="text-xs text-muted-foreground print:text-black mt-1">
+                              Click here to pay online: {link.url}
+                            </p>
+                            {link.instructions && (
+                              <p className="text-xs text-muted-foreground print:text-black italic mt-1">
+                                {link.instructions}
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Global Payment Instructions */}
+                {paymentLinks && paymentLinks.globalInstructions && (
+                  <div className="text-sm text-muted-foreground print:text-black italic">
+                    <p className="break-words">{paymentLinks.globalInstructions}</p>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
 
           {/* Items Table */}
           <div className="mb-6 sm:mb-8 print:mb-6 overflow-x-auto">

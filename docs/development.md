@@ -22,7 +22,7 @@
 
 ### What Gets Built:
 - Complete InvoiceForm component with all form sections:
-  - Business information (name, address, phone, email)
+  - Business information (name, address, phone, email
   - Invoice details (number, dates, payment terms, customer)
   - Single line item input (description, quantity, price)
   - Tax rate input
