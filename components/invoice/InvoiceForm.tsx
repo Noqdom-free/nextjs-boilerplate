@@ -23,6 +23,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { PrivacyNotice } from "@/components/ui/PrivacyNotice";
 import { ItemManager } from "./ItemManager";
 
 import { invoiceFormSchema, type InvoiceFormData } from "@/lib/validation";
@@ -232,6 +233,9 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
 
   return (
     <div className="space-y-4 sm:space-y-6">
+      {/* Privacy Notice */}
+      <PrivacyNotice />
+
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 sm:space-y-6">
         {/* Business Information */}
         <Card>
