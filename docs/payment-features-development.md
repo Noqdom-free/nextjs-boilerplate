@@ -24,7 +24,7 @@
 - Visual security indicators (lock icon, styling)
 - Proper positioning and prominence in UI
 - Complete local storage explanation messaging
-- Responsive design for privacy notice
+- Responsive design for privacy notice                
 
 **Privacy Message:**
 ```
