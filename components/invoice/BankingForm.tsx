@@ -1,12 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { Control, FieldErrors, UseFormRegister, UseFormSetValue } from "react-hook-form";
 import { Bank, Info } from "@phosphor-icons/react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Country, BANKING_REQUIREMENTS } from "@/types/banking";
-import { BANKING_FORMAT_MESSAGES, BANKING_FIELD_LABELS, formatBankingField } from "@/lib/constants";
+import { BANKING_FORMAT_MESSAGES, BANKING_FIELD_LABELS, formatBankingField, validateBankingField } from "@/lib/constants";
 
 interface BankingFormProps {
   selectedCountry?: Country;
@@ -22,6 +23,8 @@ export function BankingForm({
   errors,
   setValue
 }: BankingFormProps) {
+  // State to track field-specific validation errors
+  const [fieldValidationErrors, setFieldValidationErrors] = useState<Record<string, string>>({});
   if (!selectedCountry) {
     return (
       <Card>
@@ -59,12 +62,36 @@ export function BankingForm({
     const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setValue(`bankingInfo.${fieldName}`, value);
+      
+      // Clear validation error when user starts typing
+      if (fieldValidationErrors[fieldName]) {
+        setFieldValidationErrors(prev => {
+          const newErrors = { ...prev };
+          delete newErrors[fieldName];
+          return newErrors;
+        });
+      }
 
       // Auto-format certain fields on blur
       if (fieldName === 'sortCode' || fieldName === 'bsbNumber' || fieldName === 'iban') {
         const formatted = formatBankingField(selectedCountry, fieldName, value);
         if (formatted !== value) {
           setValue(`bankingInfo.${fieldName}`, formatted);
+        }
+      }
+    };
+
+    const handleFieldBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      const value = e.target.value.trim();
+      
+      // Only validate if field has a value and is a field that needs validation
+      if (value && formatMessage) {
+        const isValid = validateBankingField(selectedCountry, fieldName, value);
+        if (!isValid) {
+          setFieldValidationErrors(prev => ({
+            ...prev,
+            [fieldName]: formatMessage
+          }));
         }
       }
     };
@@ -79,6 +106,7 @@ export function BankingForm({
           type={type}
           {...register(`bankingInfo.${fieldName}`)}
           onChange={handleFieldChange}
+          onBlur={handleFieldBlur}
           placeholder={getFieldPlaceholder(selectedCountry, fieldName)}
           className="text-sm sm:text-base"
         />
@@ -88,9 +116,9 @@ export function BankingForm({
             <span>{formatMessage}</span>
           </div>
         )}
-        {fieldError && (
+        {(fieldError || fieldValidationErrors[fieldName]) && (
           <p className="text-sm text-destructive">
-            {(fieldError as any)?.message}
+            {fieldValidationErrors[fieldName] || (fieldError as any)?.message}
           </p>
         )}
       </div>

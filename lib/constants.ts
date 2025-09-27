@@ -138,13 +138,7 @@ export const formatBankingField = (country: Country, fieldName: string, value: s
   return value;
 };
 
-// URL validation pattern
-export const URL_PATTERN = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&=]*)$/;
-
-// Payment link validation
-export const validatePaymentURL = (url: string): boolean => {
-  return URL_PATTERN.test(url);
-};
+// URL validation removed - payment links can accept any text
 
 // Common banking field labels by country
 export const BANKING_FIELD_LABELS = {

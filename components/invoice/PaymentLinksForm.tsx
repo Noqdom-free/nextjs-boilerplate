@@ -15,7 +15,7 @@ import {
   PaymentLinkConfig,
   PaymentLinksData
 } from "@/types/payment";
-import { validatePaymentURL } from "@/lib/constants";
+// Removed validatePaymentURL import - no longer validating URLs
 
 interface PaymentLinksFormProps {
   register: UseFormRegister<any>;

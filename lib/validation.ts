@@ -3,7 +3,6 @@ import { Country } from '@/types/banking';
 import { PaymentMethod } from '@/types/payment';
 import {
   validateBankingField,
-  validatePaymentURL,
   BANKING_FORMAT_MESSAGES
 } from '@/lib/constants';
 
@@ -50,11 +49,7 @@ export const taxInfoSchema = z.object({
 export const paymentLinkSchema = z.object({
   id: z.string(),
   method: z.nativeEnum(PaymentMethod),
-  url: z.string()
-    .min(1, 'Payment URL is required')
-    .refine((val) => validatePaymentURL(val), {
-      message: 'Must be a valid URL starting with http:// or https://'
-    }),
+  url: z.string(), // No validation - users can enter any text
   displayName: z.string().max(50, 'Display name too long').optional(),
   isEnabled: z.boolean(),
   instructions: z.string().max(200, 'Instructions too long').optional()
@@ -101,20 +96,7 @@ export const invoiceFormSchema = z.object({
 }, {
   message: "Invalid banking information for selected country",
   path: ["bankingInfo"]
-}).refine((data) => {
-  // Validate payment links: URLs required when payment methods are enabled
-  if (data.paymentLinks?.links) {
-    for (const link of data.paymentLinks.links) {
-      if (link.isEnabled && (!link.url || !validatePaymentURL(link.url))) {
-        return false;
-      }
-    }
-  }
-  return true;
-}, {
-  message: "Payment URL is required for enabled payment methods",
-  path: ["paymentLinks", "links"]
-});
+}); // Removed payment URL validation - users can enter any text
 
 export type BusinessInfoFormData = z.infer<typeof businessInfoSchema>;
 export type CustomerInfoFormData = z.infer<typeof customerInfoSchema>;
