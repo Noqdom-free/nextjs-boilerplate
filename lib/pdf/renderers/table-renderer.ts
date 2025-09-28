@@ -76,24 +76,20 @@ export class TableRenderer extends PDFRendererBase {
       // Clean row data alignment - no background
       this.pdf.text(item.description, this.margins.left, this.yPosition);
 
-      // Center quantity under "Qty" header - match header position exactly
+      // Position quantity under "Qty" header - use EXACT same position as header
       const qtyText = item.quantity.toString();
-      const qtyTextWidth = this.pdf.getTextWidth(qtyText);
-      const qtyHeaderX = this.margins.left + descriptionWidth + 2;
-      const qtyX = qtyHeaderX + (quantityWidth - 4) / 2 - qtyTextWidth / 2;
-      this.pdf.text(qtyText, qtyX, this.yPosition);
+      const qtyHeaderPos = this.margins.left + descriptionWidth + 2;
+      this.pdf.text(qtyText, qtyHeaderPos, this.yPosition);
 
-      // Right-align price under "Price" header - match header position exactly
+      // Position price under "Price" header - use EXACT same position as header
       const priceText = formatCurrency(item.unitPrice);
-      const priceHeaderX = this.margins.left + descriptionWidth + quantityWidth + 2;
-      const priceTextWidth = this.pdf.getTextWidth(priceText);
-      this.pdf.text(priceText, priceHeaderX + priceWidth - 4 - priceTextWidth, this.yPosition);
+      const priceHeaderPos = this.margins.left + descriptionWidth + quantityWidth + 2;
+      this.pdf.text(priceText, priceHeaderPos, this.yPosition);
 
-      // Right-align total under "Total" header - match header position exactly
+      // Position total under "Total" header - use EXACT same position as header
       const totalText = formatCurrency(item.total);
-      const totalHeaderX = this.margins.left + descriptionWidth + quantityWidth + priceWidth + 2;
-      const totalTextWidth = this.pdf.getTextWidth(totalText);
-      this.pdf.text(totalText, totalHeaderX + totalWidth - 4 - totalTextWidth, this.yPosition);
+      const totalHeaderPos = this.margins.left + descriptionWidth + quantityWidth + priceWidth + 2;
+      this.pdf.text(totalText, totalHeaderPos, this.yPosition);
 
       // Add separator line between items (except after the last item)
       if (index < items.length - 1) {
@@ -116,14 +112,14 @@ export class TableRenderer extends PDFRendererBase {
     _quantityWidth: number, 
     _priceWidth: number
   ): void {
-    // Clean table borders like preview - simple horizontal lines only
-    this.pdf.setDrawColor(220, 220, 220);
-    this.pdf.setLineWidth(0.3);
+    // Clean table borders like preview - thin lines only
+    this.pdf.setDrawColor(240, 240, 240);
+    this.pdf.setLineWidth(0.2);
     
-    // Top border line under the header
+    // Top border line under the header - thin like item separators
     this.pdf.line(this.margins.left, headerEndY, this.margins.left + tableWidth, headerEndY);
     
-    // Bottom border line under all items
+    // Bottom border line under all items - thin like item separators
     this.yPosition += 2; // Small spacing before bottom border
     this.pdf.line(this.margins.left, this.yPosition, this.margins.left + tableWidth, this.yPosition);
   }
