@@ -7,18 +7,20 @@ export abstract class PDFRendererBase {
   protected readonly pageWidth: number;
   protected readonly pageHeight: number;
   protected readonly margins = {
-    top: 25,
-    bottom: 25,
-    left: 25,
-    right: 25
+    top: 15,
+    bottom: 15,
+    left: 15,
+    right: 15
   };
   protected yPosition: number;
+  protected currentPageNumber: number;
 
   constructor(pdf: jsPDF, initialYPosition: number) {
     this.pdf = pdf;
     this.pageWidth = this.pdf.internal.pageSize.getWidth();
     this.pageHeight = this.pdf.internal.pageSize.getHeight();
     this.yPosition = initialYPosition;
+    this.currentPageNumber = 1;
   }
 
   /** Get current Y position for chaining renderers */
@@ -31,11 +33,34 @@ export abstract class PDFRendererBase {
     this.yPosition = y;
   }
 
-  /** Add a visual separator line */
+  /** Check if we need a new page and create one if necessary */
+  protected checkPageOverflow(requiredSpace: number = 10): boolean {
+    const remainingSpace = this.pageHeight - this.margins.bottom - this.yPosition;
+    if (remainingSpace < requiredSpace) {
+      this.addNewPage();
+      return true;
+    }
+    return false;
+  }
+
+  /** Add a new page and reset Y position */
+  protected addNewPage(): void {
+    this.pdf.addPage();
+    this.currentPageNumber++;
+    this.yPosition = this.margins.top;
+  }
+
+  /** Get remaining space on current page */
+  protected getRemainingSpace(): number {
+    return this.pageHeight - this.margins.bottom - this.yPosition;
+  }
+
+  /** Add a visual separator line with reduced spacing */
   protected addSeparatorLine(): void {
+    this.checkPageOverflow(10);
     this.pdf.setDrawColor(200, 200, 200);
     this.pdf.line(this.margins.left, this.yPosition, this.pageWidth - this.margins.right, this.yPosition);
-    this.yPosition += 15;
+    this.yPosition += 4; // Reduced from 8 to 4
   }
 
   /** Reset text formatting to default black */

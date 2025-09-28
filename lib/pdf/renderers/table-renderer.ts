@@ -5,6 +5,7 @@ import { PDFRendererBase } from '../pdf-renderer-base';
 /** Renderer for itemized table with description, quantity, price, and totals */
 export class TableRenderer extends PDFRendererBase {
   render(data: InvoiceData): void {
+    this.checkPageOverflow(25); // Reduced space check
     this.addSeparatorLine();
 
     const tableStartY = this.yPosition;
@@ -20,26 +21,26 @@ export class TableRenderer extends PDFRendererBase {
     this.renderTableRows(data, tableWidth, descriptionWidth, quantityWidth, priceWidth, totalWidth);
     this.renderTableBorders(tableStartY, tableWidth, descriptionWidth, quantityWidth, priceWidth);
 
-    this.yPosition += 20;
+    this.yPosition += 6; // Further reduced from 12 to 6
   }
 
   private renderTableHeader(tableWidth: number, descriptionWidth: number, quantityWidth: number, priceWidth: number): void {
     // Table header with better styling
-    this.pdf.setFontSize(11);
+    this.pdf.setFontSize(10);
     this.pdf.setFont('helvetica', 'bold');
     this.pdf.setTextColor(0, 0, 0);
 
     // Light gray header background for contrast
     this.pdf.setFillColor(230, 230, 230);
-    this.pdf.rect(this.margins.left, this.yPosition - 4, tableWidth, 10, 'F');
+    this.pdf.rect(this.margins.left, this.yPosition - 2, tableWidth, 6, 'F'); // Further reduced height
 
     // Header text with better positioning
-    this.pdf.text('Description', this.margins.left + 3, this.yPosition + 2);
-    this.pdf.text('Qty', this.margins.left + descriptionWidth + 3, this.yPosition + 2);
-    this.pdf.text('Price', this.margins.left + descriptionWidth + quantityWidth + 3, this.yPosition + 2);
-    this.pdf.text('Total', this.margins.left + descriptionWidth + quantityWidth + priceWidth + 3, this.yPosition + 2);
+    this.pdf.text('Description', this.margins.left + 3, this.yPosition + 1);
+    this.pdf.text('Qty', this.margins.left + descriptionWidth + 3, this.yPosition + 1);
+    this.pdf.text('Price', this.margins.left + descriptionWidth + quantityWidth + 3, this.yPosition + 1);
+    this.pdf.text('Total', this.margins.left + descriptionWidth + quantityWidth + priceWidth + 3, this.yPosition + 1);
 
-    this.yPosition += 12;
+    this.yPosition += 6; // Further reduced from 9 to 6
   }
 
   private renderTableRows(
@@ -52,7 +53,7 @@ export class TableRenderer extends PDFRendererBase {
   ): void {
     // Table rows with improved spacing
     this.pdf.setFont('helvetica', 'normal');
-    this.pdf.setFontSize(10);
+    this.pdf.setFontSize(9);
 
     const items = data.items.length > 0 ? data.items : [{
       id: '1',
@@ -63,10 +64,13 @@ export class TableRenderer extends PDFRendererBase {
     }];
 
     items.forEach((item, index) => {
+      // Check if we need a new page for each row
+      this.checkPageOverflow(5);
+      
       // Zebra striping for better readability
       if (index % 2 === 0) {
         this.pdf.setFillColor(248, 248, 248);
-        this.pdf.rect(this.margins.left, this.yPosition - 3, tableWidth, 9, 'F');
+        this.pdf.rect(this.margins.left, this.yPosition - 1, tableWidth, 5, 'F'); // Further reduced height
       }
 
       // Row data with better alignment
@@ -87,7 +91,7 @@ export class TableRenderer extends PDFRendererBase {
       const totalTextWidth = this.pdf.getTextWidth(totalText);
       this.pdf.text(totalText, this.margins.left + descriptionWidth + quantityWidth + priceWidth + totalWidth - totalTextWidth - 3, this.yPosition + 1);
 
-      this.yPosition += 9;
+      this.yPosition += 5; // Further reduced from 7 to 5
     });
   }
 
@@ -101,11 +105,11 @@ export class TableRenderer extends PDFRendererBase {
     // Table border
     this.pdf.setDrawColor(180, 180, 180);
     this.pdf.setLineWidth(0.5);
-    this.pdf.rect(this.margins.left, tableStartY - 4, tableWidth, this.yPosition - tableStartY + 4);
+    this.pdf.rect(this.margins.left, tableStartY - 2, tableWidth, this.yPosition - tableStartY + 2); // Adjusted for further reduced header height
 
     // Column separators
-    this.pdf.line(this.margins.left + descriptionWidth, tableStartY - 4, this.margins.left + descriptionWidth, this.yPosition);
-    this.pdf.line(this.margins.left + descriptionWidth + quantityWidth, tableStartY - 4, this.margins.left + descriptionWidth + quantityWidth, this.yPosition);
-    this.pdf.line(this.margins.left + descriptionWidth + quantityWidth + priceWidth, tableStartY - 4, this.margins.left + descriptionWidth + quantityWidth + priceWidth, this.yPosition);
+    this.pdf.line(this.margins.left + descriptionWidth, tableStartY - 2, this.margins.left + descriptionWidth, this.yPosition);
+    this.pdf.line(this.margins.left + descriptionWidth + quantityWidth, tableStartY - 2, this.margins.left + descriptionWidth + quantityWidth, this.yPosition);
+    this.pdf.line(this.margins.left + descriptionWidth + quantityWidth + priceWidth, tableStartY - 2, this.margins.left + descriptionWidth + quantityWidth + priceWidth, this.yPosition);
   }
 }

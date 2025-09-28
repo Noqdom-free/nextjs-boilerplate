@@ -5,7 +5,7 @@ import { PDFRendererBase } from '../pdf-renderer-base';
 export class HeaderRenderer extends PDFRendererBase {
   render(data: InvoiceData): void {
     // Large, bold INVOICE title on left
-    this.pdf.setFontSize(32);
+    this.pdf.setFontSize(24);
     this.pdf.setFont('helvetica', 'bold');
     this.pdf.setTextColor(0, 0, 0);
     this.pdf.text('INVOICE', this.margins.left, this.yPosition);
@@ -25,15 +25,15 @@ export class HeaderRenderer extends PDFRendererBase {
       const textWidth = this.pdf.getTextWidth(line);
       if (index === 0) {
         this.pdf.setFont('helvetica', 'bold');
-        this.pdf.setFontSize(14);
+        this.pdf.setFontSize(12);
       } else {
         this.pdf.setFont('helvetica', 'normal');
-        this.pdf.setFontSize(10);
+        this.pdf.setFontSize(9);
       }
       this.pdf.text(line, rightAlign - textWidth, businessYPos);
-      businessYPos += index === 0 ? 8 : 6;
+      businessYPos += index === 0 ? 5 : 3; // Further reduced spacing
     });
 
-    this.yPosition += 40;
+    this.yPosition += 15; // Further reduced from 25 to 15
   }
 }

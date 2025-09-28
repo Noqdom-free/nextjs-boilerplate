@@ -11,6 +11,7 @@ export class DetailsRenderer extends PDFRendererBase {
 
   /** Render invoice number, dates, and payment terms */
   private renderInvoiceDetails(data: InvoiceData): void {
+    this.checkPageOverflow(30);
     this.addSeparatorLine();
 
     // Invoice details aligned to right for clean layout
@@ -28,26 +29,27 @@ export class DetailsRenderer extends PDFRendererBase {
       const textWidth = this.pdf.getTextWidth(detail);
       if (index === 0) {
         this.pdf.setFont('helvetica', 'bold');
-        this.pdf.setFontSize(12);
+        this.pdf.setFontSize(11);
       } else {
         this.pdf.setFont('helvetica', 'normal');
-        this.pdf.setFontSize(10);
+        this.pdf.setFontSize(9);
       }
       this.pdf.text(detail, rightAlign - textWidth, detailYPos);
-      detailYPos += index === 0 ? 8 : 6;
+      detailYPos += index === 0 ? 4 : 3; // Further reduced spacing
     });
 
-    this.yPosition += 35;
+    this.yPosition += 12; // Further reduced from 22 to 12
   }
 
   /** Render customer billing information section */
   private renderBillingInfo(data: InvoiceData): void {
+    this.checkPageOverflow(25);
     this.addSeparatorLine();
 
     // Bill To section with improved styling
-    this.setHeaderStyle(14);
+    this.setHeaderStyle(12);
     this.pdf.text('Bill To:', this.margins.left, this.yPosition);
-    this.yPosition += 10;
+    this.yPosition += 6;
 
     const customerInfo = [
       data.customer.name || 'Customer Name',
@@ -59,15 +61,15 @@ export class DetailsRenderer extends PDFRendererBase {
     customerInfo.forEach((line, index) => {
       if (index === 0) {
         this.pdf.setFont('helvetica', 'bold');
-        this.pdf.setFontSize(12);
+        this.pdf.setFontSize(11);
       } else {
         this.pdf.setFont('helvetica', 'normal');
-        this.pdf.setFontSize(10);
+        this.pdf.setFontSize(9);
       }
       this.pdf.text(line, this.margins.left, this.yPosition);
-      this.yPosition += index === 0 ? 7 : 5;
+      this.yPosition += index === 0 ? 4 : 3; // Further reduced spacing
     });
 
-    this.yPosition += 20;
+    this.yPosition += 6; // Further reduced from 12 to 6
   }
 }
