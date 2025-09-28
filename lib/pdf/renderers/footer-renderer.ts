@@ -11,19 +11,22 @@ export class FooterRenderer extends PDFRendererBase {
 
   /** Render payment instructions and notes section */
   private renderPaymentInstructions(data: InvoiceData): void {
-    this.addSeparatorLine();
+    this.addCleanSeparator();
 
-    this.setHeaderStyle(11);
+    this.pdf.setFont('helvetica', 'bold');
+    this.pdf.setFontSize(9);
+    this.pdf.setTextColor(0, 0, 0);
     this.pdf.text('Payment Instructions:', this.margins.left, this.yPosition);
-    this.yPosition += 5; // Further reduced from 8 to 5
+    this.yPosition += 4;
 
-    this.setNormalStyle(9);
+    this.pdf.setFont('helvetica', 'normal');
+    this.pdf.setFontSize(8);
     this.pdf.text('Please remit payment by the due date specified above.', this.margins.left, this.yPosition);
-    this.yPosition += 3; // Further reduced from 5 to 3
+    this.yPosition += 3;
 
     const contactEmail = data.business.email || 'your business email';
     this.pdf.text(`For questions regarding this invoice, please contact ${contactEmail}.`, this.margins.left, this.yPosition);
-    this.yPosition += 5; // Further reduced from 8 to 5
+    this.yPosition += 4;
 
     // Additional notes or special instructions
     if (data.details.notes) {
@@ -33,11 +36,12 @@ export class FooterRenderer extends PDFRendererBase {
 
   private renderNotes(notes: string): void {
     this.pdf.setFont('helvetica', 'bold');
-    this.pdf.setFontSize(10);
+    this.pdf.setFontSize(8);
     this.pdf.text('Notes:', this.margins.left, this.yPosition);
-    this.yPosition += 4; // Further reduced from 6 to 4
+    this.yPosition += 3;
 
-    this.setNormalStyle(9);
+    this.pdf.setFont('helvetica', 'normal');
+    this.pdf.setFontSize(8);
 
     // Wrap long text to fit within margins
     const maxWidth = this.pageWidth - this.margins.left - this.margins.right;
@@ -45,31 +49,32 @@ export class FooterRenderer extends PDFRendererBase {
 
     noteLines.forEach((line: string) => {
       this.pdf.text(line, this.margins.left, this.yPosition);
-      this.yPosition += 3; // Further reduced from 4 to 3
+      this.yPosition += 3;
     });
 
-    this.yPosition += 3; // Further reduced from 4 to 3
+    this.yPosition += 3;
   }
 
   /** Render footer with thank you message */
   private renderFooter(_data: InvoiceData): void {
-    // Position footer at bottom of page or after content, whichever is lower
-    const minFooterY = this.yPosition + 10;
-    const idealFooterY = this.pageHeight - this.margins.bottom - 15;
-    const footerY = Math.max(minFooterY, idealFooterY);
-
-    // Add separator line above footer
-    this.pdf.setDrawColor(200, 200, 200);
-    this.pdf.line(this.margins.left, footerY - 8, this.pageWidth - this.margins.right, footerY - 8);
-
-    // Centered thank you message in gray italic
-    this.pdf.setFontSize(10);
-    this.pdf.setFont('helvetica', 'italic');
+    // Simple centered thank you like preview
+    this.yPosition += 6;
+    
+    this.pdf.setFontSize(8);
+    this.pdf.setFont('helvetica', 'normal');
     this.pdf.setTextColor(100, 100, 100);
 
     const thankYouText = 'Thank you for your business!';
     const centerX = this.getCenterAlignedX(thankYouText);
 
-    this.pdf.text(thankYouText, centerX, footerY);
+    this.pdf.text(thankYouText, centerX, this.yPosition);
+  }
+  
+  /** Add clean separator line like preview */
+  private addCleanSeparator(): void {
+    this.pdf.setDrawColor(220, 220, 220);
+    this.pdf.setLineWidth(0.3);
+    this.pdf.line(this.margins.left, this.yPosition, this.pageWidth - this.margins.right, this.yPosition);
+    this.yPosition += 6;
   }
 }

@@ -5,8 +5,7 @@ import { PDFRendererBase } from '../pdf-renderer-base';
 /** Renderer for itemized table with description, quantity, price, and totals */
 export class TableRenderer extends PDFRendererBase {
   render(data: InvoiceData): void {
-    this.checkPageOverflow(25); // Reduced space check
-    this.addSeparatorLine();
+    this.checkPageOverflow(25);
 
     const tableStartY = this.yPosition;
     const tableWidth = this.pageWidth - this.margins.left - this.margins.right;
@@ -21,26 +20,22 @@ export class TableRenderer extends PDFRendererBase {
     this.renderTableRows(data, tableWidth, descriptionWidth, quantityWidth, priceWidth, totalWidth);
     this.renderTableBorders(tableStartY, tableWidth, descriptionWidth, quantityWidth, priceWidth);
 
-    this.yPosition += 6; // Further reduced from 12 to 6
+    this.yPosition += 6;
   }
 
-  private renderTableHeader(tableWidth: number, descriptionWidth: number, quantityWidth: number, priceWidth: number): void {
-    // Table header with better styling
-    this.pdf.setFontSize(10);
+  private renderTableHeader(_tableWidth: number, descriptionWidth: number, quantityWidth: number, priceWidth: number): void {
+    // Clean table header like preview - small fonts, no background
+    this.pdf.setFontSize(9);
     this.pdf.setFont('helvetica', 'bold');
     this.pdf.setTextColor(0, 0, 0);
 
-    // Light gray header background for contrast
-    this.pdf.setFillColor(230, 230, 230);
-    this.pdf.rect(this.margins.left, this.yPosition - 2, tableWidth, 6, 'F'); // Further reduced height
+    // Clean header text positioning like preview
+    this.pdf.text('Description', this.margins.left + 2, this.yPosition);
+    this.pdf.text('Qty', this.margins.left + descriptionWidth + 2, this.yPosition);
+    this.pdf.text('Price', this.margins.left + descriptionWidth + quantityWidth + 2, this.yPosition);
+    this.pdf.text('Total', this.margins.left + descriptionWidth + quantityWidth + priceWidth + 2, this.yPosition);
 
-    // Header text with better positioning
-    this.pdf.text('Description', this.margins.left + 3, this.yPosition + 1);
-    this.pdf.text('Qty', this.margins.left + descriptionWidth + 3, this.yPosition + 1);
-    this.pdf.text('Price', this.margins.left + descriptionWidth + quantityWidth + 3, this.yPosition + 1);
-    this.pdf.text('Total', this.margins.left + descriptionWidth + quantityWidth + priceWidth + 3, this.yPosition + 1);
-
-    this.yPosition += 6; // Further reduced from 9 to 6
+    this.yPosition += 5; // Clean spacing
   }
 
   private renderTableRows(
@@ -51,9 +46,9 @@ export class TableRenderer extends PDFRendererBase {
     priceWidth: number, 
     totalWidth: number
   ): void {
-    // Table rows with improved spacing
+    // Clean table rows like preview - small fonts, subtle striping
     this.pdf.setFont('helvetica', 'normal');
-    this.pdf.setFontSize(9);
+    this.pdf.setFontSize(8); // Even smaller for content density
 
     const items = data.items.length > 0 ? data.items : [{
       id: '1',
@@ -64,34 +59,33 @@ export class TableRenderer extends PDFRendererBase {
     }];
 
     items.forEach((item, index) => {
-      // Check if we need a new page for each row
-      this.checkPageOverflow(5);
+      this.checkPageOverflow(4);
       
-      // Zebra striping for better readability
+      // Very subtle zebra striping like preview
       if (index % 2 === 0) {
-        this.pdf.setFillColor(248, 248, 248);
-        this.pdf.rect(this.margins.left, this.yPosition - 1, tableWidth, 5, 'F'); // Further reduced height
+        this.pdf.setFillColor(252, 252, 252);
+        this.pdf.rect(this.margins.left, this.yPosition - 1, tableWidth, 4, 'F');
       }
 
-      // Row data with better alignment
-      this.pdf.text(item.description, this.margins.left + 3, this.yPosition + 1);
+      // Clean row data alignment
+      this.pdf.text(item.description, this.margins.left + 2, this.yPosition);
 
-      // Center quantity in its column
+      // Center quantity
       const qtyText = item.quantity.toString();
       const qtyWidth = this.pdf.getTextWidth(qtyText);
       const qtyX = this.margins.left + descriptionWidth + (quantityWidth - qtyWidth) / 2;
-      this.pdf.text(qtyText, qtyX, this.yPosition + 1);
+      this.pdf.text(qtyText, qtyX, this.yPosition);
 
-      // Right-align currency values for clean appearance
+      // Right-align currency values
       const priceText = formatCurrency(item.unitPrice);
       const priceTextWidth = this.pdf.getTextWidth(priceText);
-      this.pdf.text(priceText, this.margins.left + descriptionWidth + quantityWidth + priceWidth - priceTextWidth - 3, this.yPosition + 1);
+      this.pdf.text(priceText, this.margins.left + descriptionWidth + quantityWidth + priceWidth - priceTextWidth - 2, this.yPosition);
 
       const totalText = formatCurrency(item.total);
       const totalTextWidth = this.pdf.getTextWidth(totalText);
-      this.pdf.text(totalText, this.margins.left + descriptionWidth + quantityWidth + priceWidth + totalWidth - totalTextWidth - 3, this.yPosition + 1);
+      this.pdf.text(totalText, this.margins.left + descriptionWidth + quantityWidth + priceWidth + totalWidth - totalTextWidth - 2, this.yPosition);
 
-      this.yPosition += 5; // Further reduced from 7 to 5
+      this.yPosition += 4; // Compact spacing
     });
   }
 
@@ -102,14 +96,14 @@ export class TableRenderer extends PDFRendererBase {
     quantityWidth: number, 
     priceWidth: number
   ): void {
-    // Table border
-    this.pdf.setDrawColor(180, 180, 180);
-    this.pdf.setLineWidth(0.5);
-    this.pdf.rect(this.margins.left, tableStartY - 2, tableWidth, this.yPosition - tableStartY + 2); // Adjusted for further reduced header height
+    // Clean table borders like preview
+    this.pdf.setDrawColor(220, 220, 220);
+    this.pdf.setLineWidth(0.3);
+    this.pdf.rect(this.margins.left, tableStartY - 1, tableWidth, this.yPosition - tableStartY + 1);
 
-    // Column separators
-    this.pdf.line(this.margins.left + descriptionWidth, tableStartY - 2, this.margins.left + descriptionWidth, this.yPosition);
-    this.pdf.line(this.margins.left + descriptionWidth + quantityWidth, tableStartY - 2, this.margins.left + descriptionWidth + quantityWidth, this.yPosition);
-    this.pdf.line(this.margins.left + descriptionWidth + quantityWidth + priceWidth, tableStartY - 2, this.margins.left + descriptionWidth + quantityWidth + priceWidth, this.yPosition);
+    // Subtle column separators
+    this.pdf.line(this.margins.left + descriptionWidth, tableStartY - 1, this.margins.left + descriptionWidth, this.yPosition);
+    this.pdf.line(this.margins.left + descriptionWidth + quantityWidth, tableStartY - 1, this.margins.left + descriptionWidth + quantityWidth, this.yPosition);
+    this.pdf.line(this.margins.left + descriptionWidth + quantityWidth + priceWidth, tableStartY - 1, this.margins.left + descriptionWidth + quantityWidth + priceWidth, this.yPosition);
   }
 }

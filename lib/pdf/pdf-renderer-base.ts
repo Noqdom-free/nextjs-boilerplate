@@ -55,12 +55,13 @@ export abstract class PDFRendererBase {
     return this.pageHeight - this.margins.bottom - this.yPosition;
   }
 
-  /** Add a visual separator line with reduced spacing */
+  /** Add a clean separator line like preview */
   protected addSeparatorLine(): void {
     this.checkPageOverflow(10);
-    this.pdf.setDrawColor(200, 200, 200);
+    this.pdf.setDrawColor(220, 220, 220);
+    this.pdf.setLineWidth(0.3);
     this.pdf.line(this.margins.left, this.yPosition, this.pageWidth - this.margins.right, this.yPosition);
-    this.yPosition += 4; // Reduced from 8 to 4
+    this.yPosition += 6;
   }
 
   /** Reset text formatting to default black */
