@@ -76,34 +76,34 @@ export class TableRenderer extends PDFRendererBase {
       // Clean row data alignment - no background
       this.pdf.text(item.description, this.margins.left, this.yPosition);
 
-      // Center quantity under "Qty" header
+      // Center quantity under "Qty" header - match header position exactly
       const qtyText = item.quantity.toString();
       const qtyTextWidth = this.pdf.getTextWidth(qtyText);
-      const qtyColumnCenter = this.margins.left + descriptionWidth + 2 + (quantityWidth - 4) / 2;
-      const qtyX = qtyColumnCenter - qtyTextWidth / 2;
+      const qtyHeaderX = this.margins.left + descriptionWidth + 2;
+      const qtyX = qtyHeaderX + (quantityWidth - 4) / 2 - qtyTextWidth / 2;
       this.pdf.text(qtyText, qtyX, this.yPosition);
 
-      // Right-align price under "Price" header
+      // Right-align price under "Price" header - match header position exactly
       const priceText = formatCurrency(item.unitPrice);
-      const priceColumnEnd = this.margins.left + descriptionWidth + quantityWidth + priceWidth;
+      const priceHeaderX = this.margins.left + descriptionWidth + quantityWidth + 2;
       const priceTextWidth = this.pdf.getTextWidth(priceText);
-      this.pdf.text(priceText, priceColumnEnd - priceTextWidth - 2, this.yPosition);
+      this.pdf.text(priceText, priceHeaderX + priceWidth - 4 - priceTextWidth, this.yPosition);
 
-      // Right-align total under "Total" header
+      // Right-align total under "Total" header - match header position exactly
       const totalText = formatCurrency(item.total);
-      const totalColumnEnd = this.margins.left + descriptionWidth + quantityWidth + priceWidth + totalWidth;
+      const totalHeaderX = this.margins.left + descriptionWidth + quantityWidth + priceWidth + 2;
       const totalTextWidth = this.pdf.getTextWidth(totalText);
-      this.pdf.text(totalText, totalColumnEnd - totalTextWidth - 2, this.yPosition);
+      this.pdf.text(totalText, totalHeaderX + totalWidth - 4 - totalTextWidth, this.yPosition);
 
-      this.yPosition += 4; // Compact spacing
-      
       // Add separator line between items (except after the last item)
       if (index < items.length - 1) {
-        this.yPosition += 1; // Small space before separator
+        this.yPosition += 2; // Simple space before separator
         this.pdf.setDrawColor(240, 240, 240);
         this.pdf.setLineWidth(0.2);
         this.pdf.line(this.margins.left, this.yPosition, this.margins.left + tableWidth, this.yPosition);
-        this.yPosition += 1; // Small space after separator
+        this.yPosition += 2; // Simple space after separator
+      } else {
+        this.yPosition += 4; // Regular spacing for last item
       }
     });
   }
