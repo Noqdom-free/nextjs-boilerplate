@@ -6,8 +6,10 @@ import { PDFRendererBase } from '../pdf-renderer-base';
 export class TableRenderer extends PDFRendererBase {
   render(data: InvoiceData): void {
     this.checkPageOverflow(25);
+    
+    // Add proper spacing before table to prevent overlap with previous content
+    this.yPosition += 8;
 
-    const tableStartY = this.yPosition;
     const tableWidth = this.pageWidth - this.margins.left - this.margins.right;
 
     // Proportional column widths for optimal layout
@@ -16,26 +18,36 @@ export class TableRenderer extends PDFRendererBase {
     const priceWidth = tableWidth * 0.175;       // 17.5% for unit price
     const totalWidth = tableWidth * 0.175;       // 17.5% for line total
 
+    // Render header and track where it ends
+    const headerStartY = this.yPosition;
     this.renderTableHeader(tableWidth, descriptionWidth, quantityWidth, priceWidth);
+    const headerEndY = this.yPosition;
+    
+    // Render table rows
     this.renderTableRows(data, tableWidth, descriptionWidth, quantityWidth, priceWidth, totalWidth);
-    this.renderTableBorders(tableStartY, tableWidth, descriptionWidth, quantityWidth, priceWidth);
+    
+    // Render borders starting AFTER header text is complete
+    this.renderTableBorders(headerStartY, headerEndY, tableWidth, descriptionWidth, quantityWidth, priceWidth);
 
     this.yPosition += 6;
   }
 
   private renderTableHeader(_tableWidth: number, descriptionWidth: number, quantityWidth: number, priceWidth: number): void {
+    // Add space above header to ensure it's not overlapped by borders
+    this.yPosition += 4;
+    
     // Clean table header like preview - small fonts, no background
     this.pdf.setFontSize(9);
     this.pdf.setFont('helvetica', 'bold');
     this.pdf.setTextColor(0, 0, 0);
 
-    // Clean header text positioning like preview
-    this.pdf.text('Description', this.margins.left + 2, this.yPosition);
+    // Clean header text positioning like preview - aligned left like other sections
+    this.pdf.text('Description', this.margins.left, this.yPosition);
     this.pdf.text('Qty', this.margins.left + descriptionWidth + 2, this.yPosition);
     this.pdf.text('Price', this.margins.left + descriptionWidth + quantityWidth + 2, this.yPosition);
     this.pdf.text('Total', this.margins.left + descriptionWidth + quantityWidth + priceWidth + 2, this.yPosition);
 
-    this.yPosition += 5; // Clean spacing
+    this.yPosition += 6; // Space after header before rows
   }
 
   private renderTableRows(
@@ -46,9 +58,9 @@ export class TableRenderer extends PDFRendererBase {
     priceWidth: number, 
     totalWidth: number
   ): void {
-    // Clean table rows like preview - small fonts, subtle striping
+    // Clean table rows like preview - small fonts, no backgrounds
     this.pdf.setFont('helvetica', 'normal');
-    this.pdf.setFontSize(8); // Even smaller for content density
+    this.pdf.setFontSize(8);
 
     const items = data.items.length > 0 ? data.items : [{
       id: '1',
@@ -60,15 +72,9 @@ export class TableRenderer extends PDFRendererBase {
 
     items.forEach((item, index) => {
       this.checkPageOverflow(4);
-      
-      // Very subtle zebra striping like preview
-      if (index % 2 === 0) {
-        this.pdf.setFillColor(252, 252, 252);
-        this.pdf.rect(this.margins.left, this.yPosition - 1, tableWidth, 4, 'F');
-      }
 
-      // Clean row data alignment
-      this.pdf.text(item.description, this.margins.left + 2, this.yPosition);
+      // Clean row data alignment - no background
+      this.pdf.text(item.description, this.margins.left, this.yPosition);
 
       // Center quantity
       const qtyText = item.quantity.toString();
@@ -90,20 +96,21 @@ export class TableRenderer extends PDFRendererBase {
   }
 
   private renderTableBorders(
-    tableStartY: number, 
+    _headerStartY: number,
+    headerEndY: number, 
     tableWidth: number, 
-    descriptionWidth: number, 
-    quantityWidth: number, 
-    priceWidth: number
+    _descriptionWidth: number, 
+    _quantityWidth: number, 
+    _priceWidth: number
   ): void {
-    // Clean table borders like preview
+    // Clean table borders like preview - simple horizontal lines only
     this.pdf.setDrawColor(220, 220, 220);
     this.pdf.setLineWidth(0.3);
-    this.pdf.rect(this.margins.left, tableStartY - 1, tableWidth, this.yPosition - tableStartY + 1);
-
-    // Subtle column separators
-    this.pdf.line(this.margins.left + descriptionWidth, tableStartY - 1, this.margins.left + descriptionWidth, this.yPosition);
-    this.pdf.line(this.margins.left + descriptionWidth + quantityWidth, tableStartY - 1, this.margins.left + descriptionWidth + quantityWidth, this.yPosition);
-    this.pdf.line(this.margins.left + descriptionWidth + quantityWidth + priceWidth, tableStartY - 1, this.margins.left + descriptionWidth + quantityWidth + priceWidth, this.yPosition);
+    
+    // Top border line under the header
+    this.pdf.line(this.margins.left, headerEndY, this.margins.left + tableWidth, headerEndY);
+    
+    // Bottom border line under all items
+    this.pdf.line(this.margins.left, this.yPosition, this.margins.left + tableWidth, this.yPosition);
   }
 }

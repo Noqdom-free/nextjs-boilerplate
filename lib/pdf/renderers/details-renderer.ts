@@ -10,14 +10,17 @@ export class DetailsRenderer extends PDFRendererBase {
 
   /** Render customer billing information section */
   private renderBillingInfo(data: InvoiceData): void {
-    this.checkPageOverflow(25);
+    this.checkPageOverflow(35);
 
-    // Bill To section with small, clean typography like preview
+    // Add proper spacing before Bill To section
+    this.yPosition += 8;
+
+    // Bill To header with clean styling - aligned left like other sections
     this.pdf.setFont('helvetica', 'bold');
     this.pdf.setFontSize(10);
     this.pdf.setTextColor(0, 0, 0);
     this.pdf.text('Bill To:', this.margins.left, this.yPosition);
-    this.yPosition += 6;
+    this.yPosition += 8;
 
     const customerInfo = [
       data.customer.name || 'Customer Name',
@@ -35,10 +38,11 @@ export class DetailsRenderer extends PDFRendererBase {
         this.pdf.setFontSize(9);
       }
       this.pdf.text(line, this.margins.left, this.yPosition);
-      this.yPosition += 4; // Consistent spacing
+      this.yPosition += 4;
     });
 
-    this.yPosition += 6; // Space before next section
+    // Add spacing before next section
+    this.yPosition += 10;
   }
   
   /** Add clean separator line like preview */
