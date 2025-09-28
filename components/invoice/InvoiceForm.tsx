@@ -34,6 +34,8 @@ import { PAYMENT_TERMS_OPTIONS, DEFAULT_PAYMENT_TERMS, type PaymentTermsOption, 
 import { Country } from "@/types/banking";
 import { generateInvoiceNumber, formatCurrency } from "@/lib/utils";
 import { generateInvoicePDF } from "@/lib/pdf-generator";
+import { useFormPersistence } from "@/lib/useFormPersistence";
+import { cleanupExpiredFormData } from "@/lib/formStorage";
 
 interface InvoiceFormProps {
   onDataChange: (data: Partial<InvoiceData>) => void;
@@ -43,6 +45,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generateError, setGenerateError] = useState<string | null>(null);
   const [generateSuccess, setGenerateSuccess] = useState<string | null>(null);
+  const [persistenceInfo, setPersistenceInfo] = useState<string | null>(null);
 
 
   const form = useForm<InvoiceFormData>({
@@ -86,6 +89,24 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
         links: [],
         globalInstructions: ""
       }
+    }
+  });
+
+  // Initialize form persistence
+  const formPersistence = useFormPersistence(form.watch, form.reset, {
+    storageKey: 'invoice_draft',
+    debounceMs: 2000, // Save every 2 seconds after user stops typing
+    expirationHours: 48, // Keep data for 2 days
+    excludeFields: [], // Don't exclude any fields - we want to persist everything
+    onRestore: (data) => {
+      setPersistenceInfo('✓ Draft restored from previous session');
+      setTimeout(() => setPersistenceInfo(null), 5000);
+    },
+    onSave: () => {
+      // Optionally show save indicator
+    },
+    onError: (error) => {
+      console.warn('Form persistence error:', error);
     }
   });
 
@@ -195,6 +216,11 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
     onDataChange(invoiceData);
   }, [onDataChange, invoiceData]);
 
+  // Cleanup expired form data on component mount
+  useEffect(() => {
+    cleanupExpiredFormData();
+  }, []);
+
   // Handle country selection change
   const handleCountryChange = (country: Country) => {
     form.setValue('selectedCountry', country);
@@ -229,6 +255,9 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
 
       setGenerateSuccess(`Invoice ${data.details.invoiceNumber} generated successfully!`);
 
+      // Optionally clear the saved draft after successful generation
+      // formPersistence.clearData();
+
       // Clear success message after 3 seconds
       setTimeout(() => setGenerateSuccess(null), 3000);
 
@@ -244,6 +273,10 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
     // Clear any error or success messages
     setGenerateError(null);
     setGenerateSuccess(null);
+    setPersistenceInfo(null);
+
+    // Clear the stored draft data
+    formPersistence.clearData();
 
     form.reset({
       business: {
@@ -589,6 +622,13 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
             </div>
           </CardContent>
         </Card>
+
+        {/* Persistence Info Message */}
+        {persistenceInfo && (
+          <div className="p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-md">
+            <p className="text-sm text-blue-700 font-medium">{persistenceInfo}</p>
+          </div>
+        )}
 
         {/* Success Message */}
         {generateSuccess && (
