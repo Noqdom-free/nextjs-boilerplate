@@ -71,27 +71,40 @@ export class TableRenderer extends PDFRendererBase {
     }];
 
     items.forEach((item, index) => {
-      this.checkPageOverflow(4);
+      this.checkPageOverflow(6);
 
       // Clean row data alignment - no background
       this.pdf.text(item.description, this.margins.left, this.yPosition);
 
-      // Center quantity
+      // Center quantity under "Qty" header
       const qtyText = item.quantity.toString();
-      const qtyWidth = this.pdf.getTextWidth(qtyText);
-      const qtyX = this.margins.left + descriptionWidth + (quantityWidth - qtyWidth) / 2;
+      const qtyTextWidth = this.pdf.getTextWidth(qtyText);
+      const qtyColumnCenter = this.margins.left + descriptionWidth + 2 + (quantityWidth - 4) / 2;
+      const qtyX = qtyColumnCenter - qtyTextWidth / 2;
       this.pdf.text(qtyText, qtyX, this.yPosition);
 
-      // Right-align currency values
+      // Right-align price under "Price" header
       const priceText = formatCurrency(item.unitPrice);
+      const priceColumnEnd = this.margins.left + descriptionWidth + quantityWidth + priceWidth;
       const priceTextWidth = this.pdf.getTextWidth(priceText);
-      this.pdf.text(priceText, this.margins.left + descriptionWidth + quantityWidth + priceWidth - priceTextWidth - 2, this.yPosition);
+      this.pdf.text(priceText, priceColumnEnd - priceTextWidth - 2, this.yPosition);
 
+      // Right-align total under "Total" header
       const totalText = formatCurrency(item.total);
+      const totalColumnEnd = this.margins.left + descriptionWidth + quantityWidth + priceWidth + totalWidth;
       const totalTextWidth = this.pdf.getTextWidth(totalText);
-      this.pdf.text(totalText, this.margins.left + descriptionWidth + quantityWidth + priceWidth + totalWidth - totalTextWidth - 2, this.yPosition);
+      this.pdf.text(totalText, totalColumnEnd - totalTextWidth - 2, this.yPosition);
 
       this.yPosition += 4; // Compact spacing
+      
+      // Add separator line between items (except after the last item)
+      if (index < items.length - 1) {
+        this.yPosition += 1; // Small space before separator
+        this.pdf.setDrawColor(240, 240, 240);
+        this.pdf.setLineWidth(0.2);
+        this.pdf.line(this.margins.left, this.yPosition, this.margins.left + tableWidth, this.yPosition);
+        this.yPosition += 1; // Small space after separator
+      }
     });
   }
 
@@ -111,6 +124,7 @@ export class TableRenderer extends PDFRendererBase {
     this.pdf.line(this.margins.left, headerEndY, this.margins.left + tableWidth, headerEndY);
     
     // Bottom border line under all items
+    this.yPosition += 2; // Small spacing before bottom border
     this.pdf.line(this.margins.left, this.yPosition, this.margins.left + tableWidth, this.yPosition);
   }
 }
