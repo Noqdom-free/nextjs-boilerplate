@@ -45,21 +45,9 @@ export function ItemManager({ control, errors, items, setValue }: ItemManagerPro
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span className="flex items-center gap-2">
-            <Plus className="w-5 h-5" />
-            Line Items
-          </span>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={addItem}
-            className="flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Add Item
-          </Button>
+        <CardTitle className="flex items-center gap-2">
+          <Plus className="w-5 h-5" />
+          Line Items
         </CardTitle>
         <CardDescription>
           Add items or services to your invoice
@@ -164,6 +152,19 @@ export function ItemManager({ control, errors, items, setValue }: ItemManagerPro
             {errors.items.message}
           </p>
         )}
+        
+        {/* Add Item Button - Below the items list */}
+        <div className="flex justify-center pt-4">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={addItem}
+            className="flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Add Item
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );
