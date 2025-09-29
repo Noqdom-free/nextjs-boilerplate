@@ -15,7 +15,8 @@ import {
   Calculator,
   Percent,
   Trash,
-  DownloadSimple
+  DownloadSimple,
+  Info
 } from "@phosphor-icons/react";
 
 import { Button } from "@/components/ui/button";
@@ -30,7 +31,7 @@ import { BankingForm } from "./BankingForm";
 import { PaymentLinksForm } from "./PaymentLinksForm";
 
 import { invoiceFormSchema, type InvoiceFormData } from "@/lib/validation";
-import { PAYMENT_TERMS_OPTIONS, DEFAULT_PAYMENT_TERMS, type PaymentTermsOption, type InvoiceData } from "@/types/invoice";
+import { type InvoiceData } from "@/types/invoice";
 import { Country } from "@/types/banking";
 import { generateInvoiceNumber, formatCurrency } from "@/lib/utils";
 import { generateInvoicePDF } from "@/lib/pdf-generator";
@@ -69,7 +70,6 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
         invoiceNumber: generateInvoiceNumber(),
         issueDate: new Date(),
         dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-        paymentTerms: DEFAULT_PAYMENT_TERMS,
         notes: ""
       },
       items: [{
@@ -117,6 +117,54 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
   const selectedCountry = formData.selectedCountry;
   const bankingInfo = formData.bankingInfo;
   const paymentLinks = formData.paymentLinks;
+  
+  // Helper function to format Date to YYYY-MM-DD string for date inputs
+  const formatDateForInput = (date: Date | string | undefined): string => {
+    if (!date) return '';
+    
+    // If it's already a string in YYYY-MM-DD format, return it
+    if (typeof date === 'string') {
+      // Check if it's already in YYYY-MM-DD format
+      if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        return date;
+      }
+      // Try to parse the string as a date
+      try {
+        const parsedDate = new Date(date);
+        if (!isNaN(parsedDate.getTime())) {
+          return parsedDate.toISOString().split('T')[0];
+        }
+      } catch {
+        return '';
+      }
+    }
+    
+    // Handle Date objects
+    if (date instanceof Date) {
+      try {
+        return date.toISOString().split('T')[0];
+      } catch {
+        return '';
+      }
+    }
+    
+    // Handle objects that might be Date-like (from JSON parsing)
+    try {
+      const dateObj = new Date(date as any);
+      if (!isNaN(dateObj.getTime())) {
+        return dateObj.toISOString().split('T')[0];
+      }
+    } catch {
+      return '';
+    }
+    
+    return '';
+  };
+
+  // Helper function to parse date string to Date object
+  const parseInputDate = (dateString: string): Date => {
+    return new Date(dateString + 'T00:00:00.000Z');
+  };
 
   // Dynamic calculations for multiple items
   const calculations = useMemo(() => {
@@ -206,7 +254,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
     // Individual primitive values instead of object references
     formData.business?.name, formData.business?.email, formData.business?.address, formData.business?.phone,
     formData.customer?.name, formData.customer?.email, formData.customer?.address, formData.customer?.phone,
-    formData.details?.invoiceNumber, formData.details?.issueDate, formData.details?.dueDate, formData.details?.paymentTerms, formData.details?.notes,
+    formData.details?.invoiceNumber, formData.details?.issueDate, formData.details?.dueDate, formData.details?.notes,
     calculations.items, calculations.subtotal, calculations.taxAmount, calculations.total, taxRate,
     selectedCountry, JSON.stringify(bankingInfo), JSON.stringify(paymentLinks)
   ]);
@@ -295,7 +343,6 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
         invoiceNumber: generateInvoiceNumber(),
         issueDate: new Date(),
         dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        paymentTerms: DEFAULT_PAYMENT_TERMS,
         notes: ""
       },
       items: [{
@@ -521,9 +568,11 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                 <Input
                   id="details.issueDate"
                   type="date"
-                  {...form.register("details.issueDate", {
-                    valueAsDate: true
-                  })}
+                  value={formatDateForInput(formData.details?.issueDate)}
+                  onChange={(e) => {
+                    const dateValue = e.target.value ? parseInputDate(e.target.value) : new Date();
+                    form.setValue("details.issueDate", dateValue);
+                  }}
                   className="text-sm sm:text-base"
                 />
               </div>
@@ -532,9 +581,11 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                 <Input
                   id="details.dueDate"
                   type="date"
-                  {...form.register("details.dueDate", {
-                    valueAsDate: true
-                  })}
+                  value={formatDateForInput(formData.details?.dueDate)}
+                  onChange={(e) => {
+                    const dateValue = e.target.value ? parseInputDate(e.target.value) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+                    form.setValue("details.dueDate", dateValue);
+                  }}
                   className="text-sm sm:text-base"
                 />
                 {form.formState.errors.details?.dueDate && (
@@ -543,20 +594,6 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                   </p>
                 )}
               </div>
-            </div>
-            <div className="space-y-2 sm:col-span-2 lg:col-span-3">
-              <Label htmlFor="details.paymentTerms" className="text-sm sm:text-base">Payment Terms *</Label>
-              <select
-                id="details.paymentTerms"
-                {...form.register("details.paymentTerms")}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                {Object.entries(PAYMENT_TERMS_OPTIONS).map(([key, label]) => (
-                  <option key={key} value={key}>
-                    {label}
-                  </option>
-                ))}
-              </select>
             </div>
           </CardContent>
         </Card>

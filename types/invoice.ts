@@ -27,7 +27,6 @@ export interface InvoiceDetails {
   invoiceNumber: string;
   issueDate: Date;
   dueDate: Date;
-  paymentTerms: string;
   notes?: string;
 }
 

@@ -36,7 +36,6 @@ export const invoiceDetailsSchema = z.object({
   dueDate: z.date({
     message: 'Due date is required',
   }),
-  paymentTerms: z.string().min(1, 'Payment terms are required'),
   notes: z.string().max(500, 'Notes too long').optional(),
 });
 

@@ -5,7 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Separator } from "@/components/ui/separator";
 import { formatCurrency, formatDate } from "@/lib/utils";
-import { PAYMENT_TERMS_OPTIONS } from "@/types/invoice";
 import type { InvoiceData } from "@/types/invoice";
 import { Country, COUNTRY_NAMES, type CountryBankingInfo } from "@/types/banking";
 import { type PaymentLinksData, type PaymentLinkConfig } from "@/types/payment";
@@ -69,7 +68,6 @@ export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview(
     invoiceNumber: '',
     issueDate: new Date(),
     dueDate: new Date(),
-    paymentTerms: 'net_30',
     notes: ''
   };
   const items = data.items || [];
@@ -112,9 +110,6 @@ export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview(
                 </p>
                 <p className="font-medium text-foreground print:text-black break-words">
                   Due Date: {details.dueDate ? formatDate(details.dueDate) : "Not set"}
-                </p>
-                <p className="text-muted-foreground print:text-black break-words">
-                  Terms: {details.paymentTerms ? PAYMENT_TERMS_OPTIONS[details.paymentTerms as keyof typeof PAYMENT_TERMS_OPTIONS] : "Net 30"}
                 </p>
               </div>
             </div>

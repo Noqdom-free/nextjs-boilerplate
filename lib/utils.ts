@@ -18,9 +18,29 @@ export function generateInvoiceNumber(): string {
   return `INV-${timestamp}-${random.toString().padStart(3, '0')}`;
 }
 
-export function formatDate(date: Date): string {
+export function formatDate(date: Date | string | undefined): string {
+  // Handle undefined or null dates
+  if (!date) {
+    return "--";
+  }
+
+  // Convert string to Date if needed
+  let dateObj: Date;
+  if (typeof date === 'string') {
+    dateObj = new Date(date);
+  } else if (date instanceof Date) {
+    dateObj = date;
+  } else {
+    // Handle case where date might be a plain object (from JSON parsing)
+    try {
+      dateObj = new Date(date as any);
+    } catch {
+      return "--";
+    }
+  }
+
   // Handle invalid dates gracefully to prevent crashes
-  if (!date || isNaN(date.getTime())) {
+  if (!dateObj || isNaN(dateObj.getTime())) {
     return "--";
   }
 
@@ -28,7 +48,7 @@ export function formatDate(date: Date): string {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  }).format(date);
+  }).format(dateObj);
 }
 
 export function generateId(): string {
