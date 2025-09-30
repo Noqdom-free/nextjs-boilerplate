@@ -289,6 +289,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
         throw new Error("Business name is required");
       }
       if (!data.customer.name) {
+        form.setFocus("customer.name");
         throw new Error("Customer name is required");
       }
 
@@ -306,8 +307,11 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
         throw new Error("Due date cannot be before issue date");
       }
 
-      if (!data.items.length || !data.items.some(item => item.description)) {
-        throw new Error("At least one item with description is required");
+      // Check that ALL items have descriptions
+      const emptyItemIndex = data.items.findIndex(item => !item.description || item.description.trim() === '');
+      if (emptyItemIndex !== -1) {
+        form.setFocus(`items.${emptyItemIndex}.description` as any);
+        throw new Error(`Item ${emptyItemIndex + 1} description is required`);
       }
 
       // Generate PDF using the invoice data
@@ -620,6 +624,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
         {/* Line Items */}
         <ItemManager
           control={form.control}
+          register={form.register}
           errors={form.formState.errors}
           items={items}
           setValue={form.setValue}

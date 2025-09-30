@@ -1,6 +1,6 @@
 "use client";
 
-import { useFieldArray, Control, FieldErrors } from "react-hook-form";
+import { useFieldArray, Control, FieldErrors, UseFormRegister } from "react-hook-form";
 import { Plus, Trash } from "@phosphor-icons/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,12 +11,13 @@ import type { InvoiceFormData } from "@/lib/validation";
 
 interface ItemManagerProps {
   control: Control<InvoiceFormData>;
+  register: UseFormRegister<InvoiceFormData>;
   errors: FieldErrors<InvoiceFormData>;
   items: InvoiceFormData['items'];
   setValue: (name: keyof InvoiceFormData | `items.${number}.description` | `items.${number}.quantity` | `items.${number}.unitPrice`, value: any) => void;
 }
 
-export function ItemManager({ control, errors, items, setValue }: ItemManagerProps) {
+export function ItemManager({ control, register, errors, items, setValue }: ItemManagerProps) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: "items"
@@ -79,10 +80,7 @@ export function ItemManager({ control, errors, items, setValue }: ItemManagerPro
                 <Label htmlFor={`items.${index}.description`} className="text-sm">Description *</Label>
                 <Input
                   id={`items.${index}.description`}
-                  value={item.description || ""}
-                  onChange={(e) => {
-                    setValue(`items.${index}.description`, e.target.value);
-                  }}
+                  {...register(`items.${index}.description`)}
                   placeholder="Description of item or service"
                   className="text-sm"
                 />
@@ -101,11 +99,7 @@ export function ItemManager({ control, errors, items, setValue }: ItemManagerPro
                     type="number"
                     step="0.01"
                     min="0.01"
-                    value={item.quantity || 1}
-                    onChange={(e) => {
-                      const value = e.target.value === '' ? 1 : parseFloat(e.target.value) || 1;
-                      setValue(`items.${index}.quantity`, value);
-                    }}
+                    {...register(`items.${index}.quantity`, { valueAsNumber: true })}
                     className="text-sm"
                   />
                   {errors.items?.[index]?.quantity && (
@@ -122,11 +116,7 @@ export function ItemManager({ control, errors, items, setValue }: ItemManagerPro
                     type="number"
                     step="0.01"
                     min="0"
-                    value={item.unitPrice || 0}
-                    onChange={(e) => {
-                      const value = e.target.value === '' ? 0 : parseFloat(e.target.value) || 0;
-                      setValue(`items.${index}.unitPrice`, value);
-                    }}
+                    {...register(`items.${index}.unitPrice`, { valueAsNumber: true })}
                     className="text-sm"
                   />
                   {errors.items?.[index]?.unitPrice && (
