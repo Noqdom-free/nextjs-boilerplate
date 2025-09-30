@@ -6,7 +6,7 @@ import { PDFRendererBase } from '../pdf-renderer-base';
 export class TableRenderer extends PDFRendererBase {
   render(data: InvoiceData): void {
     this.checkPageOverflow(25);
-    
+
     // Add proper spacing before table to prevent overlap with previous content
     this.yPosition += 8;
 
@@ -18,16 +18,20 @@ export class TableRenderer extends PDFRendererBase {
     const priceWidth = tableWidth * 0.175;       // 17.5% for unit price
     const totalWidth = tableWidth * 0.175;       // 17.5% for line total
 
-    // Render header and track where it ends
-    const headerStartY = this.yPosition;
+    // Render header
     this.renderTableHeader(tableWidth, descriptionWidth, quantityWidth, priceWidth);
-    const headerEndY = this.yPosition;
-    
+
+    // Draw header border immediately after header (matching preview's border-b on thead)
+    this.pdf.setDrawColor(240, 240, 240);
+    this.pdf.setLineWidth(0.2);
+    this.pdf.line(this.margins.left, this.yPosition, this.margins.left + tableWidth, this.yPosition);
+    this.yPosition += 4; // Space after header border before first item
+
     // Render table rows
     this.renderTableRows(data, tableWidth, descriptionWidth, quantityWidth, priceWidth, totalWidth);
-    
-    // Render borders starting AFTER header text is complete
-    this.renderTableBorders(headerStartY, headerEndY, tableWidth, descriptionWidth, quantityWidth, priceWidth);
+
+    // Render bottom border
+    this.renderTableBottomBorder(tableWidth);
 
     this.yPosition += 6;
   }
@@ -51,11 +55,11 @@ export class TableRenderer extends PDFRendererBase {
   }
 
   private renderTableRows(
-    data: InvoiceData, 
-    tableWidth: number, 
-    descriptionWidth: number, 
-    quantityWidth: number, 
-    priceWidth: number, 
+    data: InvoiceData,
+    tableWidth: number,
+    descriptionWidth: number,
+    quantityWidth: number,
+    priceWidth: number,
     totalWidth: number
   ): void {
     // Clean table rows like preview - small fonts, no backgrounds
@@ -72,6 +76,14 @@ export class TableRenderer extends PDFRendererBase {
 
     items.forEach((item, index) => {
       this.checkPageOverflow(6);
+
+      // Add separator line above items (except the first item) - matching preview border-t pattern
+      if (index > 0) {
+        this.pdf.setDrawColor(240, 240, 240);
+        this.pdf.setLineWidth(0.2);
+        this.pdf.line(this.margins.left, this.yPosition, this.margins.left + tableWidth, this.yPosition);
+        this.yPosition += 4; // Space after separator before text
+      }
 
       // Clean row data alignment - no background
       this.pdf.text(item.description, this.margins.left, this.yPosition);
@@ -91,35 +103,15 @@ export class TableRenderer extends PDFRendererBase {
       const totalHeaderPos = this.margins.left + descriptionWidth + quantityWidth + priceWidth + 2;
       this.pdf.text(totalText, totalHeaderPos, this.yPosition);
 
-      // Add separator line between items (except after the last item)
-      if (index < items.length - 1) {
-        this.yPosition += 2; // Simple space before separator
-        this.pdf.setDrawColor(240, 240, 240);
-        this.pdf.setLineWidth(0.2);
-        this.pdf.line(this.margins.left, this.yPosition, this.margins.left + tableWidth, this.yPosition);
-        this.yPosition += 2; // Simple space after separator
-      } else {
-        this.yPosition += 4; // Regular spacing for last item
-      }
+      // Regular spacing after each item
+      this.yPosition += 4;
     });
   }
 
-  private renderTableBorders(
-    _headerStartY: number,
-    headerEndY: number, 
-    tableWidth: number, 
-    _descriptionWidth: number, 
-    _quantityWidth: number, 
-    _priceWidth: number
-  ): void {
-    // Clean table borders like preview - thin lines only
+  private renderTableBottomBorder(tableWidth: number): void {
+    // Bottom border line under all items - thin like item separators
     this.pdf.setDrawColor(240, 240, 240);
     this.pdf.setLineWidth(0.2);
-    
-    // Top border line under the header - thin like item separators
-    this.pdf.line(this.margins.left, headerEndY, this.margins.left + tableWidth, headerEndY);
-    
-    // Bottom border line under all items - thin like item separators
     this.yPosition += 2; // Small spacing before bottom border
     this.pdf.line(this.margins.left, this.yPosition, this.margins.left + tableWidth, this.yPosition);
   }
