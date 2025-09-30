@@ -285,11 +285,27 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
 
       // Validate required fields
       if (!data.business.name) {
+        form.setFocus("business.name");
         throw new Error("Business name is required");
       }
       if (!data.customer.name) {
         throw new Error("Customer name is required");
       }
+
+      // Validate dates
+      if (!data.details.issueDate || !(data.details.issueDate instanceof Date) || isNaN(data.details.issueDate.getTime())) {
+        form.setFocus("details.issueDate");
+        throw new Error("Issue date is invalid");
+      }
+      if (!data.details.dueDate || !(data.details.dueDate instanceof Date) || isNaN(data.details.dueDate.getTime())) {
+        form.setFocus("details.dueDate");
+        throw new Error("Due date is invalid");
+      }
+      if (data.details.dueDate < data.details.issueDate) {
+        form.setFocus("details.dueDate");
+        throw new Error("Due date cannot be before issue date");
+      }
+
       if (!data.items.length || !data.items.some(item => item.description)) {
         throw new Error("At least one item with description is required");
       }
@@ -575,11 +591,9 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                 <Input
                   id="details.issueDate"
                   type="date"
-                  value={formatDateForInput(formData.details?.issueDate)}
-                  onChange={(e) => {
-                    const dateValue = e.target.value ? parseInputDate(e.target.value) : new Date();
-                    form.setValue("details.issueDate", dateValue);
-                  }}
+                  {...form.register("details.issueDate", {
+                    valueAsDate: true
+                  })}
                   className="text-sm sm:text-base"
                 />
               </div>
@@ -588,11 +602,9 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                 <Input
                   id="details.dueDate"
                   type="date"
-                  value={formatDateForInput(formData.details?.dueDate)}
-                  onChange={(e) => {
-                    const dateValue = e.target.value ? parseInputDate(e.target.value) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-                    form.setValue("details.dueDate", dateValue);
-                  }}
+                  {...form.register("details.dueDate", {
+                    valueAsDate: true
+                  })}
                   className="text-sm sm:text-base"
                 />
                 {form.formState.errors.details?.dueDate && (

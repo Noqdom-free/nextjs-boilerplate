@@ -126,8 +126,9 @@ export const formatBankingField = (country: Country, fieldName: string, value: s
 
     case Country.EU:
       if (fieldName === 'iban') {
-        // Add spaces every 4 characters for better readability
-        return value.replace(/(.{4})/g, '$1 ').trim();
+        // Remove existing spaces first, then add spaces every 4 characters for better readability
+        const cleanValue = value.replace(/\s/g, '');
+        return cleanValue.replace(/(.{4})/g, '$1 ').trim();
       }
       break;
 
