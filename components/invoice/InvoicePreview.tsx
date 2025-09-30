@@ -66,8 +66,8 @@ export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview(
   const customer = data.customer || { name: '', address: '', phone: '', email: '' };
   const details = data.details || {
     invoiceNumber: '',
-    issueDate: new Date(),
-    dueDate: new Date(),
+    issueDate: undefined,
+    dueDate: undefined,
     notes: ''
   };
   const items = data.items || [];
@@ -106,10 +106,10 @@ export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview(
                   Invoice #: {details.invoiceNumber || "INV-000"}
                 </p>
                 <p className="text-muted-foreground print:text-black break-words">
-                  Issue Date: {details.issueDate ? formatDate(details.issueDate) : formatDate(new Date())}
+                  Issue Date: {details.issueDate ? formatDate(details.issueDate) : "—"}
                 </p>
                 <p className="font-medium text-foreground print:text-black break-words">
-                  Due Date: {details.dueDate ? formatDate(details.dueDate) : "Not set"}
+                  Due Date: {details.dueDate ? formatDate(details.dueDate) : "—"}
                 </p>
               </div>
             </div>
