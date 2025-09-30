@@ -160,12 +160,17 @@ export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview(
                         .filter(link => link.isEnabled)
                         .map((link, index) => (
                           <div key={index} className="break-words">
-                            <p className="text-primary hover:text-primary/80 print:text-black font-medium cursor-pointer">
+                            <p className="text-foreground print:text-black font-medium">
                               {link.displayName || `Pay with ${link.method.charAt(0).toUpperCase() + link.method.slice(1)}`}
                             </p>
-                            <p className="text-xs text-muted-foreground print:text-black mt-1">
+                            <a
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-primary hover:text-primary/80 hover:underline print:text-black mt-1 inline-block font-medium cursor-pointer"
+                            >
                               Click here to pay online: {link.url}
-                            </p>
+                            </a>
                             {link.instructions && (
                               <p className="text-xs text-muted-foreground print:text-black italic mt-1">
                                 {link.instructions}

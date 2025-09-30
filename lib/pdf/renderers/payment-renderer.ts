@@ -73,18 +73,18 @@ export class PaymentRenderer extends PDFRendererBase {
       enabledLinks.forEach((link: any) => {
         const displayName = link.displayName || `Pay with ${link.method.charAt(0).toUpperCase() + link.method.slice(1)}`;
 
-        // Blue link styling to indicate it's clickable
+        // Display name as regular text
         this.pdf.setFontSize(8);
         this.pdf.setFont('helvetica', 'bold');
-        this.pdf.setTextColor(0, 100, 200); // Blue color for clickable links
+        this.pdf.setTextColor(0, 0, 0); // Black color for display name
 
         this.pdf.text(displayName, this.margins.left + 5, this.yPosition);
         this.yPosition += 3;
 
-        // Show URL as secondary text
-        this.pdf.setFont('helvetica', 'normal');
-        this.pdf.setFontSize(7);
-        this.pdf.setTextColor(100, 100, 100);
+        // Show URL as primary clickable link with blue color
+        this.pdf.setFont('helvetica', 'bold');
+        this.pdf.setFontSize(8);
+        this.pdf.setTextColor(0, 100, 200); // Blue color for clickable URL link
         this.pdf.text(`Click here to pay online: ${link.url}`, this.margins.left + 5, this.yPosition);
         this.yPosition += 3;
 
