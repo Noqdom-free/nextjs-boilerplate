@@ -85,7 +85,10 @@ export class PaymentRenderer extends PDFRendererBase {
         this.pdf.setFont('helvetica', 'bold');
         this.pdf.setFontSize(8);
         this.pdf.setTextColor(0, 100, 200); // Blue color for clickable URL link
-        this.pdf.text(`Click here to pay online: ${link.url}`, this.margins.left + 5, this.yPosition);
+
+        // Create clickable hyperlink
+        const linkText = `Click here to pay online: ${link.url}`;
+        this.pdf.textWithLink(linkText, this.margins.left + 5, this.yPosition, { url: link.url });
         this.yPosition += 3;
 
         // Show instructions if available
