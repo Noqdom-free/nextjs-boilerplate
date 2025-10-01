@@ -78,8 +78,10 @@ export class HeaderRenderer extends PDFRendererBase {
     });
   }
   
-  private formatDate(date: Date): string {
-    return date.toLocaleDateString('en-US', {
+  private formatDate(date: string): string {
+    // Convert YYYY-MM-DD string to Date object
+    const dateObj = new Date(date);
+    return dateObj.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'

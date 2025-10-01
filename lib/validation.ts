@@ -30,12 +30,8 @@ export const lineItemSchema = z.object({
 
 export const invoiceDetailsSchema = z.object({
   invoiceNumber: z.string().min(1, 'Invoice number is required').max(50, 'Invoice number too long'),
-  issueDate: z.date({
-    message: 'Issue date is required',
-  }).optional(),
-  dueDate: z.date({
-    message: 'Due date is required',
-  }).optional(),
+  issueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format').optional().or(z.literal('')),
+  dueDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Invalid date format').optional().or(z.literal('')),
   notes: z.string().max(500, 'Notes too long').optional(),
 });
 

@@ -130,32 +130,17 @@ export class FormStorage {
   }
 
   /**
-   * Serialize complex data including Date objects
+   * Serialize data to JSON string
    */
   private serialize(data: any): string {
-    return JSON.stringify(data, (key, value) => {
-      // Handle Date objects
-      if (value instanceof Date) {
-        return {
-          __type: 'Date',
-          value: value.toISOString()
-        };
-      }
-      return value;
-    });
+    return JSON.stringify(data);
   }
 
   /**
-   * Deserialize data and restore Date objects
+   * Deserialize JSON string to data
    */
   private deserialize(dataStr: string): any {
-    return JSON.parse(dataStr, (key, value) => {
-      // Restore Date objects
-      if (value && value.__type === 'Date') {
-        return new Date(value.value);
-      }
-      return value;
-    });
+    return JSON.parse(dataStr);
   }
 
   /**

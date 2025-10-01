@@ -25,8 +25,8 @@ export interface LineItem {
 
 export interface InvoiceDetails {
   invoiceNumber: string;
-  issueDate: Date;
-  dueDate: Date;
+  issueDate: string; // YYYY-MM-DD format
+  dueDate: string;   // YYYY-MM-DD format
   notes?: string;
 }
 

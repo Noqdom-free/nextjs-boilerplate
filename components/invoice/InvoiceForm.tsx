@@ -68,8 +68,8 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
       },
       details: {
         invoiceNumber: generateInvoiceNumber(),
-        issueDate: undefined,
-        dueDate: undefined,
+        issueDate: "",
+        dueDate: "",
         notes: ""
       },
       items: [{
@@ -117,54 +117,6 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
   const selectedCountry = formData.selectedCountry;
   const bankingInfo = formData.bankingInfo;
   const paymentLinks = formData.paymentLinks;
-  
-  // Helper function to format Date to YYYY-MM-DD string for date inputs
-  const formatDateForInput = (date: Date | string | undefined): string => {
-    if (!date) return '';
-    
-    // If it's already a string in YYYY-MM-DD format, return it
-    if (typeof date === 'string') {
-      // Check if it's already in YYYY-MM-DD format
-      if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-        return date;
-      }
-      // Try to parse the string as a date
-      try {
-        const parsedDate = new Date(date);
-        if (!isNaN(parsedDate.getTime())) {
-          return parsedDate.toISOString().split('T')[0];
-        }
-      } catch {
-        return '';
-      }
-    }
-    
-    // Handle Date objects
-    if (date instanceof Date) {
-      try {
-        return date.toISOString().split('T')[0];
-      } catch {
-        return '';
-      }
-    }
-    
-    // Handle objects that might be Date-like (from JSON parsing)
-    try {
-      const dateObj = new Date(date as any);
-      if (!isNaN(dateObj.getTime())) {
-        return dateObj.toISOString().split('T')[0];
-      }
-    } catch {
-      return '';
-    }
-    
-    return '';
-  };
-
-  // Helper function to parse date string to Date object
-  const parseInputDate = (dateString: string): Date => {
-    return new Date(dateString + 'T00:00:00.000Z');
-  };
 
   // Dynamic calculations for multiple items
   const calculations = useMemo(() => {
@@ -294,13 +246,13 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
       }
 
       // Validate dates
-      if (!data.details.issueDate || !(data.details.issueDate instanceof Date) || isNaN(data.details.issueDate.getTime())) {
+      if (!data.details.issueDate || data.details.issueDate.trim() === '') {
         form.setFocus("details.issueDate");
-        throw new Error("Issue date is invalid");
+        throw new Error("Issue date is required");
       }
-      if (!data.details.dueDate || !(data.details.dueDate instanceof Date) || isNaN(data.details.dueDate.getTime())) {
+      if (!data.details.dueDate || data.details.dueDate.trim() === '') {
         form.setFocus("details.dueDate");
-        throw new Error("Due date is invalid");
+        throw new Error("Due date is required");
       }
       if (data.details.dueDate < data.details.issueDate) {
         form.setFocus("details.dueDate");
@@ -361,8 +313,8 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
       },
       details: {
         invoiceNumber: generateInvoiceNumber(),
-        issueDate: undefined,
-        dueDate: undefined,
+        issueDate: "",
+        dueDate: "",
         notes: ""
       },
       items: [{
@@ -595,9 +547,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                 <Input
                   id="details.issueDate"
                   type="date"
-                  {...form.register("details.issueDate", {
-                    valueAsDate: true
-                  })}
+                  {...form.register("details.issueDate")}
                   className="text-sm sm:text-base"
                 />
               </div>
@@ -606,9 +556,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
                 <Input
                   id="details.dueDate"
                   type="date"
-                  {...form.register("details.dueDate", {
-                    valueAsDate: true
-                  })}
+                  {...form.register("details.dueDate")}
                   className="text-sm sm:text-base"
                 />
                 {form.formState.errors.details?.dueDate && (
