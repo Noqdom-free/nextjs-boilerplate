@@ -165,7 +165,11 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
     const baseData = {
       business: formData.business,
       customer: formData.customer,
-      details: formData.details,
+      details: {
+        ...formData.details,
+        issueDate: formData.details?.issueDate ?? "",
+        dueDate: formData.details?.dueDate ?? ""
+      },
       items: calculations.items,
       tax: {
         rate: taxRate,
