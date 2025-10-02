@@ -62,7 +62,7 @@ export function BankingForm({
     const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const value = e.target.value;
       setValue(`bankingInfo.${fieldName}`, value);
-
+      
       // Clear validation error when user starts typing
       if (fieldValidationErrors[fieldName]) {
         setFieldValidationErrors(prev => {
@@ -71,10 +71,6 @@ export function BankingForm({
           return newErrors;
         });
       }
-    };
-
-    const handleFieldBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-      const value = e.target.value.trim();
 
       // Auto-format certain fields on blur
       if (fieldName === 'sortCode' || fieldName === 'bsbNumber' || fieldName === 'iban') {
@@ -83,7 +79,11 @@ export function BankingForm({
           setValue(`bankingInfo.${fieldName}`, formatted);
         }
       }
+    };
 
+    const handleFieldBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+      const value = e.target.value.trim();
+      
       // Only validate if field has a value and is a field that needs validation
       if (value && formatMessage) {
         const isValid = validateBankingField(selectedCountry, fieldName, value);
