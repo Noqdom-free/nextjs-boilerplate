@@ -51,19 +51,15 @@ export class HeaderRenderer extends PDFRendererBase {
   
   private renderRightColumn(data: InvoiceData, x: number): void {
     let currentY = this.yPosition;
-    const rightAlign = this.pageWidth - this.margins.right;
-    
+
     // Invoice details with consistent small typography like preview
     const invoiceDetails = [
       `Invoice #: ${data.details.invoiceNumber}`,
       `Issue Date: ${this.formatDate(data.details.issueDate)}`,
-      `Due Date: ${this.formatDate(data.details.dueDate)}`,
-      `Terms: Net 30`
+      `Due Date: ${this.formatDate(data.details.dueDate)}`
     ];
-    
+
     invoiceDetails.forEach((detail, index) => {
-      const textWidth = this.pdf.getTextWidth(detail);
-      
       if (index === 0) {
         // Invoice number - slightly bold
         this.pdf.setFont('helvetica', 'bold');
@@ -72,8 +68,9 @@ export class HeaderRenderer extends PDFRendererBase {
         this.pdf.setFont('helvetica', 'normal');
         this.pdf.setFontSize(9);
       }
-      
-      this.pdf.text(detail, rightAlign - textWidth, currentY);
+
+      // Left-align at fixed x position like business info
+      this.pdf.text(detail, x, currentY);
       currentY += 4;
     });
   }
