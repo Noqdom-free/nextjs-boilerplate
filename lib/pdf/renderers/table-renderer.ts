@@ -1,4 +1,5 @@
 import { InvoiceData } from '@/types/invoice';
+import { Currency } from '@/types/currency';
 import { formatCurrency } from '../../utils';
 import { PDFRendererBase } from '../pdf-renderer-base';
 
@@ -94,12 +95,13 @@ export class TableRenderer extends PDFRendererBase {
       this.pdf.text(qtyText, qtyHeaderPos, this.yPosition);
 
       // Position price under "Price" header - use EXACT same position as header
-      const priceText = formatCurrency(item.unitPrice);
+      const currency = data.currency || Currency.USD;
+      const priceText = formatCurrency(item.unitPrice, currency);
       const priceHeaderPos = this.margins.left + descriptionWidth + quantityWidth + 2;
       this.pdf.text(priceText, priceHeaderPos, this.yPosition);
 
       // Position total under "Total" header - use EXACT same position as header
-      const totalText = formatCurrency(item.total);
+      const totalText = formatCurrency(item.total, currency);
       const totalHeaderPos = this.margins.left + descriptionWidth + quantityWidth + priceWidth + 2;
       this.pdf.text(totalText, totalHeaderPos, this.yPosition);
 

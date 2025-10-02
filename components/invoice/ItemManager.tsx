@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { formatCurrency, generateId } from "@/lib/utils";
+import { Currency } from "@/types/currency";
 import type { InvoiceFormData } from "@/lib/validation";
 
 interface ItemManagerProps {
@@ -14,10 +15,11 @@ interface ItemManagerProps {
   register: UseFormRegister<InvoiceFormData>;
   errors: FieldErrors<InvoiceFormData>;
   items: InvoiceFormData['items'];
+  currency?: Currency;
   setValue: (name: keyof InvoiceFormData | `items.${number}.description` | `items.${number}.quantity` | `items.${number}.unitPrice`, value: any) => void;
 }
 
-export function ItemManager({ control, register, errors, items, setValue }: ItemManagerProps) {
+export function ItemManager({ control, register, errors, items, currency = Currency.USD, setValue }: ItemManagerProps) {
   const { fields, append, remove } = useFieldArray({
     control,
     name: "items"
@@ -129,7 +131,7 @@ export function ItemManager({ control, register, errors, items, setValue }: Item
                 <div className="space-y-2 sm:col-span-2">
                   <Label className="text-sm">Line Total</Label>
                   <div className="flex h-10 w-full rounded-md border border-input bg-muted px-3 py-2 text-sm items-center">
-                    {formatCurrency(lineTotal)}
+                    {formatCurrency(lineTotal, currency)}
                   </div>
                 </div>
               </div>

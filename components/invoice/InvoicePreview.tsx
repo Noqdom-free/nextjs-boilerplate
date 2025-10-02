@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { InvoiceData } from "@/types/invoice";
 import { Country, COUNTRY_NAMES, type CountryBankingInfo } from "@/types/banking";
+import { Currency } from "@/types/currency";
 import { type PaymentLinksData, type PaymentLinkConfig } from "@/types/payment";
 
 interface InvoicePreviewProps {
@@ -73,6 +74,7 @@ export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview(
   const items = data.items || [];
   const tax = data.tax || { rate: 0, amount: 0 };
   const calculations = data.calculations || { subtotal: 0, taxAmount: 0, total: 0 };
+  const currency = data.currency || Currency.USD;
   const bankingInfo = data.bankingInfo;
   const paymentLinks = data.paymentLinks;
 
@@ -214,10 +216,10 @@ export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview(
                         {item.quantity || 1}
                       </TableCell>
                       <TableCell className="text-right print:text-black text-xs sm:text-sm whitespace-nowrap w-16 sm:w-20">
-                        {formatCurrency(item.unitPrice || 0)}
+                        {formatCurrency(item.unitPrice || 0, currency)}
                       </TableCell>
                       <TableCell className="text-right print:text-black text-xs sm:text-sm whitespace-nowrap w-16 sm:w-24">
-                        {formatCurrency(item.total || 0)}
+                        {formatCurrency(item.total || 0, currency)}
                       </TableCell>
                     </TableRow>
                   ))
@@ -228,10 +230,10 @@ export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview(
                     </TableCell>
                     <TableCell className="text-center text-muted-foreground print:text-black text-xs sm:text-sm w-12 sm:w-16">1</TableCell>
                     <TableCell className="text-right text-muted-foreground print:text-black text-xs sm:text-sm whitespace-nowrap w-16 sm:w-20">
-                      {formatCurrency(0)}
+                      {formatCurrency(0, currency)}
                     </TableCell>
                     <TableCell className="text-right text-muted-foreground print:text-black text-xs sm:text-sm whitespace-nowrap w-16 sm:w-24">
-                      {formatCurrency(0)}
+                      {formatCurrency(0, currency)}
                     </TableCell>
                   </TableRow>
                 )}
@@ -244,18 +246,18 @@ export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview(
             <div className="w-full max-w-xs sm:w-72 space-y-3">
               <div className="flex justify-between items-center pb-2">
                 <span className="text-xs sm:text-sm font-medium print:text-black">Subtotal:</span>
-                <span className="text-xs sm:text-sm print:text-black whitespace-nowrap">{formatCurrency(calculations.subtotal)}</span>
+                <span className="text-xs sm:text-sm print:text-black whitespace-nowrap">{formatCurrency(calculations.subtotal, currency)}</span>
               </div>
               {tax.rate > 0 && (
                 <div className="flex justify-between items-center pb-2">
                   <span className="text-xs sm:text-sm font-medium print:text-black">Tax ({tax.rate}%):</span>
-                  <span className="text-xs sm:text-sm print:text-black whitespace-nowrap">{formatCurrency(calculations.taxAmount)}</span>
+                  <span className="text-xs sm:text-sm print:text-black whitespace-nowrap">{formatCurrency(calculations.taxAmount, currency)}</span>
                 </div>
               )}
               <Separator className="print:border-black" />
               <div className="flex justify-between items-center pt-2">
                 <span className="text-base sm:text-lg font-bold print:text-black">Total:</span>
-                <span className="text-base sm:text-lg font-bold print:text-black whitespace-nowrap">{formatCurrency(calculations.total)}</span>
+                <span className="text-base sm:text-lg font-bold print:text-black whitespace-nowrap">{formatCurrency(calculations.total, currency)}</span>
               </div>
             </div>
           </div>

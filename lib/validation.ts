@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { Country } from '@/types/banking';
+import { Currency } from '@/types/currency';
 import { PaymentMethod } from '@/types/payment';
 import {
   validateBankingField,
@@ -61,6 +62,7 @@ export const invoiceFormSchema = z.object({
   details: invoiceDetailsSchema,
   items: z.array(lineItemSchema).min(1, 'At least one item is required'),
   tax: taxInfoSchema,
+  currency: z.nativeEnum(Currency).default(Currency.USD), // Currency selection with USD as default
   selectedCountry: z.nativeEnum(Country).optional(),
   bankingInfo: z.record(z.string(), z.any()).optional(), // Dynamic banking info based on country
   paymentLinks: paymentLinksDataSchema.optional(), // Payment links configuration

@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { PrivacyNotice } from "@/components/ui/PrivacyNotice";
 import { CountrySelector } from "@/components/ui/CountrySelector";
+import { CurrencySelector } from "@/components/ui/CurrencySelector";
 import { ItemManager } from "./ItemManager";
 import { BankingForm } from "./BankingForm";
 import { PaymentLinksForm } from "./PaymentLinksForm";
@@ -33,6 +34,7 @@ import { PaymentLinksForm } from "./PaymentLinksForm";
 import { invoiceFormSchema, type InvoiceFormData } from "@/lib/validation";
 import { type InvoiceData } from "@/types/invoice";
 import { Country } from "@/types/banking";
+import { Currency } from "@/types/currency";
 import { generateInvoiceNumber, formatCurrency } from "@/lib/utils";
 import { generateInvoicePDF } from "@/lib/pdf-generator";
 import { useFormPersistence } from "@/lib/useFormPersistence";
@@ -83,6 +85,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
         rate: 0,
         amount: 0
       },
+      currency: Currency.USD,
       selectedCountry: undefined,
       bankingInfo: {},
       paymentLinks: {
@@ -114,6 +117,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
   const formData = form.watch();
   const items = formData.items || [];
   const taxRate = formData.tax?.rate || 0;
+  const currency = formData.currency || Currency.USD;
   const selectedCountry = formData.selectedCountry;
   const bankingInfo = formData.bankingInfo;
   const paymentLinks = formData.paymentLinks;
@@ -179,7 +183,8 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
         subtotal: calculations.subtotal,
         taxAmount: calculations.taxAmount,
         total: calculations.total
-      }
+      },
+      currency
     };
 
     // Add optional payment features
@@ -211,7 +216,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
     formData.business?.name, formData.business?.email, formData.business?.address, formData.business?.phone,
     formData.customer?.name, formData.customer?.email, formData.customer?.address, formData.customer?.phone,
     formData.details?.invoiceNumber, formData.details?.issueDate, formData.details?.dueDate, formData.details?.notes,
-    calculations.items, calculations.subtotal, calculations.taxAmount, calculations.total, taxRate,
+    calculations.items, calculations.subtotal, calculations.taxAmount, calculations.total, taxRate, currency,
     selectedCountry, JSON.stringify(bankingInfo), JSON.stringify(paymentLinks)
   ]);
 
@@ -224,6 +229,11 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
   useEffect(() => {
     cleanupExpiredFormData();
   }, []);
+
+  // Handle currency selection change
+  const handleCurrencyChange = (currency: Currency) => {
+    form.setValue('currency', currency);
+  };
 
   // Handle country selection change
   const handleCountryChange = (country: Country) => {
@@ -332,6 +342,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
         rate: 0,
         amount: 0
       },
+      currency: Currency.USD,
       selectedCountry: undefined,
       bankingInfo: {},
       paymentLinks: {
@@ -489,10 +500,15 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
               Payment Information
             </CardTitle>
             <CardDescription>
-              Select your country and configure banking details for payment
+              Select currency, country, and configure banking details for payment
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 p-4 sm:p-6">
+            <CurrencySelector
+              value={currency}
+              onChange={handleCurrencyChange}
+              error={form.formState.errors.currency?.message}
+            />
             <CountrySelector
               value={selectedCountry}
               onChange={handleCountryChange}
@@ -579,6 +595,7 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
           register={form.register}
           errors={form.formState.errors}
           items={items}
+          currency={currency}
           setValue={form.setValue}
         />
 
@@ -620,16 +637,16 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-sm sm:text-base font-medium">Subtotal:</span>
-                  <span className="text-sm sm:text-base">{formatCurrency(calculations.subtotal)}</span>
+                  <span className="text-sm sm:text-base">{formatCurrency(calculations.subtotal, currency)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm sm:text-base font-medium">Tax:</span>
-                  <span className="text-sm sm:text-base">{formatCurrency(calculations.taxAmount)}</span>
+                  <span className="text-sm sm:text-base">{formatCurrency(calculations.taxAmount, currency)}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between items-center">
                   <span className="text-base sm:text-lg font-bold">Total:</span>
-                  <span className="text-base sm:text-lg font-bold">{formatCurrency(calculations.total)}</span>
+                  <span className="text-base sm:text-lg font-bold">{formatCurrency(calculations.total, currency)}</span>
                 </div>
               </div>
             </div>

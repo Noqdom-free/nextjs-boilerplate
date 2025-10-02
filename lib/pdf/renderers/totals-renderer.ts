@@ -1,4 +1,5 @@
 import { InvoiceData } from '@/types/invoice';
+import { Currency } from '@/types/currency';
 import { formatCurrency } from '../../utils';
 import { PDFRendererBase } from '../pdf-renderer-base';
 
@@ -34,7 +35,8 @@ export class TotalsRenderer extends PDFRendererBase {
     this.pdf.setFont('helvetica', 'normal');
     this.pdf.setFontSize(9);
     this.pdf.text('Subtotal:', labelX, this.yPosition);
-    const subtotalText = formatCurrency(data.calculations.subtotal);
+    const currency = data.currency || Currency.USD;
+    const subtotalText = formatCurrency(data.calculations.subtotal, currency);
     const subtotalWidth = this.pdf.getTextWidth(subtotalText);
     this.pdf.text(subtotalText, valueX - subtotalWidth, this.yPosition);
     this.yPosition += 5;
@@ -44,7 +46,8 @@ export class TotalsRenderer extends PDFRendererBase {
     this.pdf.setFont('helvetica', 'normal');
     this.pdf.setFontSize(9);
     this.pdf.text(`Tax (${data.tax.rate}%):`, labelX, this.yPosition);
-    const taxText = formatCurrency(data.calculations.taxAmount);
+    const currency = data.currency || Currency.USD;
+    const taxText = formatCurrency(data.calculations.taxAmount, currency);
     const taxWidth = this.pdf.getTextWidth(taxText);
     this.pdf.text(taxText, valueX - taxWidth, this.yPosition);
     this.yPosition += 5;
@@ -63,7 +66,8 @@ export class TotalsRenderer extends PDFRendererBase {
     this.pdf.setFont('helvetica', 'bold');
     this.pdf.setFontSize(10); // Slightly larger but not huge
     this.pdf.text('Total:', labelX, this.yPosition);
-    const totalText = formatCurrency(data.calculations.total);
+    const currency = data.currency || Currency.USD;
+    const totalText = formatCurrency(data.calculations.total, currency);
     const totalWidth = this.pdf.getTextWidth(totalText);
     this.pdf.text(totalText, valueX - totalWidth, this.yPosition);
   }
