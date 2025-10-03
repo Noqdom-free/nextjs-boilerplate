@@ -56,53 +56,7 @@ export const paymentLinksDataSchema = z.object({
   globalInstructions: z.string().max(500, 'Instructions too long').optional()
 });
 
-export const invoiceFormSchema = z.object({
-  business: businessInfoSchema,
-  customer: customerInfoSchema,
-  details: invoiceDetailsSchema,
-  items: z.array(lineItemSchema).min(1, 'At least one item is required'),
-  tax: taxInfoSchema,
-  currency: z.nativeEnum(Currency).default(Currency.USD), // Currency selection with USD as default
-  selectedCountry: z.nativeEnum(Country).optional(),
-  bankingInfo: z.record(z.string(), z.any()).optional(), // Dynamic banking info based on country
-  paymentLinks: paymentLinksDataSchema.optional(), // Payment links configuration
-}).refine((data) => {
-  // Validate that issue date is not after due date
-  const issueDate = data.details.issueDate;
-  const dueDate = data.details.dueDate;
-
-  if (issueDate && dueDate) {
-    return issueDate <= dueDate;
-  }
-  return true; // Allow if either date is missing
-}, {
-  message: "Due date cannot be before issue date",
-  path: ["details", "dueDate"] // Show error on due date field
-}).refine((data) => {
-  // Validate banking info if country is selected
-  if (data.selectedCountry && data.bankingInfo) {
-    try {
-      const schema = getBankingSchema(data.selectedCountry);
-      schema.parse(data.bankingInfo);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-  return true;
-}, {
-  message: "Invalid banking information for selected country",
-  path: ["bankingInfo"]
-}); // Removed payment URL validation - users can enter any text
-
-export type BusinessInfoFormData = z.infer<typeof businessInfoSchema>;
-export type CustomerInfoFormData = z.infer<typeof customerInfoSchema>;
-export type LineItemFormData = z.infer<typeof lineItemSchema>;
-export type InvoiceDetailsFormData = z.infer<typeof invoiceDetailsSchema>;
-export type TaxInfoFormData = z.infer<typeof taxInfoSchema>;
-export type InvoiceFormData = z.infer<typeof invoiceFormSchema>;
-
-// Banking validation schemas by country
+// Banking validation schemas by country - defined before invoiceFormSchema uses them
 export const usBankingSchema = z.object({
   bankName: z.string().min(1, 'Bank name is required').max(100, 'Bank name too long'),
   routingNumber: z.string()
@@ -205,6 +159,52 @@ export const getBankingSchema = (country: Country) => {
       throw new Error(`Unsupported country: ${country}`);
   }
 };
+
+export const invoiceFormSchema = z.object({
+  business: businessInfoSchema,
+  customer: customerInfoSchema,
+  details: invoiceDetailsSchema,
+  items: z.array(lineItemSchema).min(1, 'At least one item is required'),
+  tax: taxInfoSchema,
+  currency: z.nativeEnum(Currency), // Currency selection
+  selectedCountry: z.nativeEnum(Country).optional(),
+  bankingInfo: z.record(z.string(), z.any()).optional(), // Dynamic banking info based on country
+  paymentLinks: paymentLinksDataSchema.optional(), // Payment links configuration
+}).refine((data) => {
+  // Validate that issue date is not after due date
+  const issueDate = data.details.issueDate;
+  const dueDate = data.details.dueDate;
+
+  if (issueDate && dueDate) {
+    return issueDate <= dueDate;
+  }
+  return true; // Allow if either date is missing
+}, {
+  message: "Due date cannot be before issue date",
+  path: ["details", "dueDate"] // Show error on due date field
+}).refine((data) => {
+  // Validate banking info if country is selected
+  if (data.selectedCountry && data.bankingInfo) {
+    try {
+      const schema = getBankingSchema(data.selectedCountry);
+      schema.parse(data.bankingInfo);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  return true;
+}, {
+  message: "Invalid banking information for selected country",
+  path: ["bankingInfo"]
+}); // Removed payment URL validation - users can enter any text
+
+export type BusinessInfoFormData = z.infer<typeof businessInfoSchema>;
+export type CustomerInfoFormData = z.infer<typeof customerInfoSchema>;
+export type LineItemFormData = z.infer<typeof lineItemSchema>;
+export type InvoiceDetailsFormData = z.infer<typeof invoiceDetailsSchema>;
+export type TaxInfoFormData = z.infer<typeof taxInfoSchema>;
+export type InvoiceFormData = z.infer<typeof invoiceFormSchema>;
 
 // Type exports for banking schemas
 export type USBankingFormData = z.infer<typeof usBankingSchema>;
