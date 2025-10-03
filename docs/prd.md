@@ -12,7 +12,7 @@ A simple, one-page web application for generating professional invoices. Users c
 ## File Structure
 
 ```
-nextjs-boilerplate/
+invoice-generator-by-noqdom/
 ├── docs/
 │   └── prd.md                          # Product Requirements Document
 ├── app/
