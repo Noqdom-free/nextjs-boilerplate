@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { InvoiceForm } from "@/components/invoice/InvoiceForm";
 import { InvoicePreview } from "@/components/invoice/InvoicePreview";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { NoqdomBanner } from "@/components/ui/NoqdomBanner";
 import type { InvoiceData } from "@/types/invoice";
 
 export default function Home() {
@@ -26,6 +27,9 @@ export default function Home() {
           <p className="text-sm text-blue-700 font-medium">{persistenceInfo}</p>
         </div>
       )}
+
+      {/* Noqdom Banner */}
+      <NoqdomBanner />
 
       {/* Header */}
       <header className="border-b bg-card print:hidden">
