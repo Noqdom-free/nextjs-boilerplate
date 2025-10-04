@@ -8,13 +8,25 @@ import type { InvoiceData } from "@/types/invoice";
 
 export default function Home() {
   const [invoiceData, setInvoiceData] = useState<Partial<InvoiceData>>({});
+  const [persistenceInfo, setPersistenceInfo] = useState<string | null>(null);
 
   const handleDataChange = useCallback((data: Partial<InvoiceData>) => {
     setInvoiceData(data);
   }, []);
 
+  const handlePersistenceInfo = useCallback((message: string | null) => {
+    setPersistenceInfo(message);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Draft Notification - Fixed at top right, always on top */}
+      {persistenceInfo && (
+        <div className="fixed top-4 right-4 z-[9999] p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-md shadow-lg max-w-xs print:hidden">
+          <p className="text-sm text-blue-700 font-medium">{persistenceInfo}</p>
+        </div>
+      )}
+
       {/* Header */}
       <header className="border-b bg-card print:hidden">
         <div className="container mx-auto px-4 py-3 sm:px-6 sm:py-4">
@@ -36,7 +48,7 @@ export default function Home() {
           {/* Form Column */}
           <div className="space-y-4 sm:space-y-6">
             <div className="lg:sticky lg:top-6">
-              <InvoiceForm onDataChange={handleDataChange} />
+              <InvoiceForm onDataChange={handleDataChange} onPersistenceInfo={handlePersistenceInfo} />
             </div>
           </div>
 

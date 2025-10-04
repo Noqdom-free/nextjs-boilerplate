@@ -42,13 +42,13 @@ import { cleanupExpiredFormData } from "@/lib/formStorage";
 
 interface InvoiceFormProps {
   onDataChange: (data: Partial<InvoiceData>) => void;
+  onPersistenceInfo?: (message: string | null) => void;
 }
 
-export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
+export function InvoiceForm({ onDataChange, onPersistenceInfo }: InvoiceFormProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generateError, setGenerateError] = useState<string | null>(null);
   const [generateSuccess, setGenerateSuccess] = useState<string | null>(null);
-  const [persistenceInfo, setPersistenceInfo] = useState<string | null>(null);
 
 
   const form = useForm<InvoiceFormData>({
@@ -102,8 +102,8 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
     expirationHours: 48, // Keep data for 2 days
     excludeFields: [], // Don't exclude any fields - we want to persist everything
     onRestore: (data) => {
-      setPersistenceInfo('✓ Draft restored from previous session. Click \'Clear Form\' button to clear the draft.');
-      setTimeout(() => setPersistenceInfo(null), 5000);
+      onPersistenceInfo?.('✓ Draft restored from previous session. Click \'Clear Form\' button to clear the draft.');
+      setTimeout(() => onPersistenceInfo?.(null), 5000);
     },
     onSave: () => {
       // Optionally show save indicator
@@ -354,13 +354,6 @@ export function InvoiceForm({ onDataChange }: InvoiceFormProps) {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Draft Notification - Top Right Corner */}
-      {persistenceInfo && (
-        <div className="fixed top-4 right-4 z-50 p-3 sm:p-4 bg-blue-50 border border-blue-200 rounded-md shadow-lg max-w-xs">
-          <p className="text-sm text-blue-700 font-medium">{persistenceInfo}</p>
-        </div>
-      )}
-      
       {/* Privacy Notice */}
       <PrivacyNotice />
 
