@@ -14,7 +14,7 @@ export function PrivacyNotice({
   showIcon = true,
   customMessage
 }: PrivacyNoticeProps) {
-  const defaultMessage = `🔒 All information details are stored only on your device (local storage).`;
+  const defaultMessage = `All information details are stored only on your device (local storage).`;
 
   const message = customMessage || defaultMessage;
 
