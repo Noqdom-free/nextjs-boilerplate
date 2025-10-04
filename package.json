@@ -1,7 +1,31 @@
 {
   "name": "invoice-generator-by-noqdom",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "license": "MIT",
+  "author": "Noqdom",
+  "description": "A modern, free, and open-source invoice generator with real-time preview, multi-currency support, and instant PDF export",
+  "keywords": [
+    "invoice",
+    "invoice-generator",
+    "pdf",
+    "nextjs",
+    "react",
+    "typescript",
+    "tailwindcss",
+    "jspdf",
+    "multi-currency",
+    "free",
+    "open-source"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/noqdom/invoice-generator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/noqdom/invoice-generator/issues"
+  },
+  "homepage": "https://github.com/noqdom/invoice-generator#readme",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",

@@ -1,5 +1,9 @@
 # Invoice Generator by Noqdom
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
+
 A modern, free, and open-source invoice generator with real-time preview, multi-currency support, and instant PDF export.
 
 ## Features
@@ -19,18 +23,37 @@ A modern, free, and open-source invoice generator with real-time preview, multi-
 - **UI Components**: shadcn/ui
 - **PDF Generation**: jsPDF
 
-## Getting Started
-
-First, run the development server:
+## Installation
 
 ```bash
+# Clone the repository
+git clone https://github.com/noqdom/invoice-generator.git
+
+# Navigate to directory
+cd invoice-generator
+
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to use the app.
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new) from the creators of Next.js.
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+- Report bugs via [GitHub Issues](https://github.com/noqdom/invoice-generator/issues)
+- For security issues, see [SECURITY.md](SECURITY.md)
+
+## Acknowledgments
+
+Built with [Next.js](https://nextjs.org/), [Tailwind CSS](https://tailwindcss.com/), and [shadcn/ui](https://ui.shadcn.com/).
