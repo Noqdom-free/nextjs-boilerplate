@@ -86,9 +86,6 @@ export const InvoicePreview = memo<InvoicePreviewProps>(function InvoicePreview(
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start mb-6 sm:mb-8 print:mb-6 space-y-4 sm:space-y-0">
             <div className="space-y-2">
               <div className="flex items-center gap-2 mb-3 sm:mb-4">
-                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-primary rounded flex items-center justify-center print:bg-black">
-                  <span className="text-white text-xs sm:text-sm font-bold">$</span>
-                </div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-primary print:text-black">INVOICE</h1>
               </div>
               <div className="text-sm text-muted-foreground print:text-black">
