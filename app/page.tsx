@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import { InvoiceForm } from "@/components/invoice/InvoiceForm";
 import { InvoicePreview } from "@/components/invoice/InvoicePreview";
+import { ThemeToggle } from "@/components/theme-toggle";
 import type { InvoiceData } from "@/types/invoice";
 
 export default function Home() {
@@ -17,11 +18,14 @@ export default function Home() {
       {/* Header */}
       <header className="border-b bg-card print:hidden">
         <div className="container mx-auto px-4 py-3 sm:px-6 sm:py-4">
-          <div className="flex items-center gap-2">
-            <div className="w-5 h-5 sm:w-6 sm:h-6 bg-primary rounded flex items-center justify-center">
-              <span className="text-white text-xs font-bold">$</span>
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 sm:w-6 sm:h-6 bg-primary rounded flex items-center justify-center">
+                <span className="text-primary-foreground text-xs font-bold">$</span>
+              </div>
+              <h1 className="text-lg sm:text-xl font-semibold truncate">Invoice Generator</h1>
             </div>
-            <h1 className="text-lg sm:text-xl font-semibold truncate">Invoice Generator</h1>
+            <ThemeToggle />
           </div>
         </div>
       </header>
